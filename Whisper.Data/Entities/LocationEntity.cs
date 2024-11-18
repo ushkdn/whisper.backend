@@ -1,5 +1,7 @@
-﻿namespace Whisper.Data.Entities;
-public record LocationEntity
+﻿using Whisper.Data.Entities.Base;
+
+namespace Whisper.Data.Entities;
+public record LocationEntity : Entity
 {
     public string Country { get; set; } = string.Empty;
     public string Region { get; set; } = string.Empty;

@@ -3,7 +3,7 @@ using Whisper.Data.Entities.Base;
 
 namespace Whisper.Data.Repositories.Base;
 
-internal abstract class Repository<TEntity>(WhisperDbContext context) : IRepository<TEntity> where TEntity : class, IEntity
+public class Repository<TEntity>(WhisperDbContext context) : IRepository<TEntity> where TEntity : class, IEntity
 {
     protected WhisperDbContext DbContext => context;
 
