@@ -2,6 +2,6 @@
 
 public abstract record EntityBase : Entity
 {
-    public DateTime DateCreated { get; init; }
+    public DateTime DateCreated { get; set; }
     public DateTime DateUpdated { get; set; }
 }
