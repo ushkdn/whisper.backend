@@ -7,7 +7,7 @@ public class Repository<TEntity>(WhisperDbContext context) : IRepository<TEntity
 {
     protected WhisperDbContext DbContext => context;
 
-    public void Create(TEntity entity)
+    public virtual void Create(TEntity entity)
     {
         if (entity is EntityBase entityBase)
         {
@@ -16,7 +16,7 @@ public class Repository<TEntity>(WhisperDbContext context) : IRepository<TEntity
         context.Set<TEntity>().Add(entity);
     }
 
-    public async Task<Lazy<int>> CreateAsync(TEntity entity)
+    public virtual async Task<Lazy<int>> CreateAsync(TEntity entity)
     {
         if (entity is EntityBase entityBase)
         {
@@ -26,7 +26,7 @@ public class Repository<TEntity>(WhisperDbContext context) : IRepository<TEntity
         return new Lazy<int>(() => entity.Id);
     }
 
-    public List<Lazy<int>> CreateRange(List<TEntity> entities)
+    public virtual List<Lazy<int>> CreateRange(List<TEntity> entities)
     {
         foreach (var entity in entities)
         {
@@ -45,7 +45,7 @@ public class Repository<TEntity>(WhisperDbContext context) : IRepository<TEntity
         return entitiesIds;
     }
 
-    public async Task<List<Lazy<int>>> CreateRangeAsync(List<TEntity> entities)
+    public virtual async Task<List<Lazy<int>>> CreateRangeAsync(List<TEntity> entities)
     {
         foreach (var entity in entities)
         {
@@ -63,23 +63,23 @@ public class Repository<TEntity>(WhisperDbContext context) : IRepository<TEntity
         return entitiesId;
     }
 
-    public void Delete(TEntity entity)
+    public virtual void Delete(TEntity entity)
     {
         context.Set<TEntity>().Remove(entity);
     }
 
-    public async Task<List<TEntity>> GetAllAsync()
+    public virtual async Task<List<TEntity>> GetAllAsync()
     {
         return await context.Set<TEntity>().ToListAsync();
     }
 
-    public async Task<TEntity> GetByIdAsync(int id)
+    public virtual async Task<TEntity> GetByIdAsync(int id)
     {
         return await context.Set<TEntity>().FindAsync(id)
             ?? throw new KeyNotFoundException($"Unable to find {nameof(TEntity)} with id: {id}");
     }
 
-    public void Update(TEntity entity)
+    public virtual void Update(TEntity entity)
     {
         if (entity is EntityBase entityBase)
         {
