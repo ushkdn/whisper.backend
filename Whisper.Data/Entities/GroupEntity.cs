@@ -17,5 +17,4 @@ public record GroupEntity : EntityBase
     [Column("is_closed")]
     public bool IsClosed { get; set; }
 
-    public virtual List<UserEntity> Followers { get; set; } = new();
 }

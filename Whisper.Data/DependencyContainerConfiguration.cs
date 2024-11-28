@@ -8,22 +8,10 @@ using Whisper.Data.Repositories.User;
 
 namespace Whisper.Data;
 
-public class DependencyContainerConfiguration
+public class DependencyContainerConfiguration(IServiceCollection services, IConfiguration configuration)
 {
-    public DependencyContainerConfiguration RegisterServices(
-        IServiceCollection services,
-        IConfiguration configuration,
-        string connectionStringKey)
+    public DependencyContainerConfiguration RegisterServices()
     {
-        var connectionString = configuration.GetConnectionString(connectionStringKey)
-            ?? throw new ArgumentNullException($"{connectionStringKey} is not configured.");
-
-        services.AddDbContext<WhisperDbContext>(options =>
-            options
-            .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-            .UseNpgsql(connectionString,
-                x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
-
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IGroupRepository, GroupRepository>();
@@ -31,6 +19,19 @@ public class DependencyContainerConfiguration
         return this;
     }
 
+    public DependencyContainerConfiguration RegisterDatabase(string connectionStringKey)
+    {
+        var connectionString = configuration.GetConnectionString(connectionStringKey)
+                               ?? throw new ArgumentNullException($"{connectionStringKey} is not configured.");
+
+        services.AddDbContext<WhisperDbContext>(options =>
+            options
+                .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
+                .UseNpgsql(connectionString,
+                    x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+
+        return this;
+    }
     public DependencyContainerConfiguration SetNpgsqlContext()
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

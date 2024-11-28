@@ -1,3 +1,5 @@
+using Whisper.Data;
+
 namespace Whisper;
 
 public class Program
@@ -10,6 +12,10 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
         builder.Services.AddOpenApi();
+
+        new DependencyContainerConfiguration(builder.Services, builder.Configuration)
+            .RegisterServices()
+            .RegisterDatabase("Postgres");
 
         var app = builder.Build();
 

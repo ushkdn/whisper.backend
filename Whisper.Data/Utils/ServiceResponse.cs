@@ -1,4 +1,4 @@
-﻿namespace Whisper.Core.Utils;
+﻿namespace Whisper.Data.Utils;
 
 public record ServiceResponse<T>
 {

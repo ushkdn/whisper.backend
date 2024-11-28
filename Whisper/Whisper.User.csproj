@@ -11,4 +11,8 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="7.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Whisper.Data\Whisper.Data.csproj" />
+  </ItemGroup>
+
 </Project>
