@@ -16,4 +16,8 @@
     <Folder Include="TokenService\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Whisper.Data\Whisper.Data.csproj" />
+  </ItemGroup>
+
 </Project>

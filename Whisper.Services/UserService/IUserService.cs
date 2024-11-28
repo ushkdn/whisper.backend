@@ -1,4 +1,6 @@
-﻿namespace Whisper.Services.UserService;
+﻿using Whisper.Data.Dtos.User;
+
+namespace Whisper.Services.UserService;
 
 public interface IUserService
 {
