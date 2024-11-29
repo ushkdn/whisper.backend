@@ -1,6 +1,5 @@
-﻿using Whisper.Core.Utils;
-
-namespace Whisper.Core.Extensions;
+﻿using Whisper.Data.Utils;
+namespace Whisper.Data.Extensions;
 
 public static class ExceptionExtension
 {

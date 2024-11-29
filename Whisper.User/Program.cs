@@ -1,4 +1,5 @@
 using Whisper.Data;
+using Whisper.Services.UserService;
 
 namespace Whisper;
 
@@ -13,6 +14,9 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddOpenApi();
 
+
+        builder.Services.AddSingleton<IUserService, UserService>();
+            
         new DependencyContainerConfiguration(builder.Services, builder.Configuration)
             .RegisterServices()
             .RegisterDatabase("Postgres");

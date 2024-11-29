@@ -1,14 +1,15 @@
 ﻿using Whisper.Data.Dtos.User;
+using Whisper.Data.Utils;
 
 namespace Whisper.Services.UserService;
 
 public interface IUserService
 {
-    Task Register(UserRegisterDto user);
+    Task<ServiceResponse<string>> Register(UserRegisterDto user);
 
-    Task LogIn(UserLogInDto user);
+    Task<ServiceResponse<string>> LogIn(UserLogInDto user);
 
-    Task ForgotPassword(UserForgotPasswordDto user);
+    Task<ServiceResponse<string>> ForgotPassword(UserForgotPasswordDto user);
 
-    Task ResetPassword(UserResetPasswordDto user);
+    Task<ServiceResponse<string>> ResetPassword(UserResetPasswordDto user);
 }
