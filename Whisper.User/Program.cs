@@ -1,7 +1,7 @@
 using Whisper.Data;
 using Whisper.Services.UserService;
 
-namespace Whisper;
+namespace Whisper.User;
 
 public class Program
 {

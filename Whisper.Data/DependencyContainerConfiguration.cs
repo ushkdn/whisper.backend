@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using StackExchange.Redis;
 using Whisper.Data.Repositories.Base;
-using Whisper.Data.Repositories.Group;
-using Whisper.Data.Repositories.Location;
-using Whisper.Data.Repositories.User;
+using Whisper.Data.Repositories.CacheRepository;
+using Whisper.Data.Repositories.GroupRepository;
+using Whisper.Data.Repositories.LocationRepository;
+using Whisper.Data.Repositories.UserRepository;
 
 namespace Whisper.Data;
 
@@ -19,16 +21,27 @@ public class DependencyContainerConfiguration(IServiceCollection services, IConf
         return this;
     }
 
-    public DependencyContainerConfiguration RegisterDatabase(string connectionStringKey)
+    public DependencyContainerConfiguration RegisterDatabase(string dbConnectionStringKey)
     {
-        var connectionString = configuration.GetConnectionString(connectionStringKey)
-                               ?? throw new ArgumentNullException($"{connectionStringKey} is not configured.");
+        var dbConnectionString = configuration.GetConnectionString(dbConnectionStringKey)
+                               ?? throw new ArgumentNullException($"{dbConnectionStringKey} is not configured.");
 
         services.AddDbContext<WhisperDbContext>(options =>
             options
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
-                .UseNpgsql(connectionString,
+                .UseNpgsql(dbConnectionString,
                     x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+
+        return this;
+    }
+
+    public DependencyContainerConfiguration RegisterCacheStorage(string cacheStorageConnectionStringKey)
+    {
+        var cacheStorageconnectionString = configuration.GetConnectionString(cacheStorageConnectionStringKey)
+            ?? throw new ArgumentNullException($"{cacheStorageConnectionStringKey} is not configured.");
+
+        services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(cacheStorageconnectionString));
+        services.AddSingleton<ICacheRepository, CacheRepository>();
 
         return this;
     }
