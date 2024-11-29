@@ -15,18 +15,23 @@ public class Program
         builder.Services.AddOpenApi();
 
 
-        builder.Services.AddSingleton<IUserService, UserService>();
-            
+        builder.Services.AddScoped<IUserService, UserService>();
+
         new DependencyContainerConfiguration(builder.Services, builder.Configuration)
             .RegisterServices()
-            .RegisterDatabase("Postgres");
+            .RegisterDatabase("Postgres")
+            .SetNpgsqlContext();
 
         var app = builder.Build();
 
         if (app.Environment.IsDevelopment())
         {
             app.UseSwagger();
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
+                c.RoutePrefix = string.Empty;
+            });
         }
 
         app.UseHttpsRedirection();

@@ -10,25 +10,25 @@ namespace Whisper.User.Controllers;
 public class UserController(IUserService userService) : Controller
 {
     [HttpPost("/register")]
-    public async Task<ServiceResponse<string>> Register(UserRegisterDto user)
+    public async Task<ServiceResponse<string>> Register([FromBody] UserRegisterDto user)
     {
         return await userService.Register(user);
     }
     
     [HttpPost("/login")]
-    public async Task<ServiceResponse<string>> ForgotPassword(UserForgotPasswordDto user)
+    public async Task<ServiceResponse<string>> ForgotPassword([FromBody] UserForgotPasswordDto user)
     {
         return await userService.ForgotPassword(user);
     }
     
     [HttpPost("/reset-password")]
-    public async Task<ServiceResponse<string>> ResetPassword(UserResetPasswordDto user)
+    public async Task<ServiceResponse<string>> ResetPassword([FromBody] UserResetPasswordDto user)
     {
         return await userService.ResetPassword(user);
     }
     
     [HttpPost("/log-in")]
-    public async Task<ServiceResponse<string>> LogIn(UserLogInDto user)
+    public async Task<ServiceResponse<string>> LogIn([FromBody] UserLogInDto user)
     {
         return await userService.LogIn(user);
     }
