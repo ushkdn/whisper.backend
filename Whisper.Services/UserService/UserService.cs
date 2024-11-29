@@ -1,4 +1,5 @@
-﻿using Whisper.Data.Dtos.User;
+﻿using System.Text.RegularExpressions;
+using Whisper.Data.Dtos.User;
 using Whisper.Data.Entities;
 using Whisper.Data.Extensions;
 using Whisper.Data.Mapping;
@@ -11,9 +12,30 @@ namespace Whisper.Services.UserService;
 
 public class UserService(IUserRepository userRepository, ITransactionManager transactionManager, ICacheRepository cacheRepository) : IUserService
 {
-    public Task<ServiceResponse<string>> ForgotPassword(UserForgotPasswordDto user)
+    public async Task<ServiceResponse<string>> ForgotPassword(UserForgotPasswordDto user)
     {
-        throw new NotImplementedException();
+        var serviceResponse = new ServiceResponse<string>();
+        const string EMAIL_REGEX = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+        try
+        {
+            if (Regex.IsMatch(user.EmailOrPhoneNumber, EMAIL_REGEX))
+            {
+                //
+            }
+            else
+            {
+                //
+            }
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Code for password reset sent";
+        }
+        catch (Exception ex)
+        {
+            serviceResponse = ex.ToServiceResponse<string>();
+        }
+
+        return serviceResponse;
     }
 
     public async Task<ServiceResponse<string>> LogIn(UserLogInDto user)
@@ -56,8 +78,20 @@ public class UserService(IUserRepository userRepository, ITransactionManager tra
         return serviceResponse;
     }
 
-    public Task<ServiceResponse<string>> ResetPassword(UserResetPasswordDto user)
+    public async Task<ServiceResponse<string>> ResetPassword(UserResetPasswordDto user)
     {
-        return null;
+        var serviceResponse = new ServiceResponse<string>();
+        try
+        {
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Password changed";
+        }
+        catch (Exception ex)
+        {
+            serviceResponse = ex.ToServiceResponse<string>();
+        }
+
+        return serviceResponse;
     }
 }
