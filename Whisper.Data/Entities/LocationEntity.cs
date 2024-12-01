@@ -7,6 +7,7 @@ namespace Whisper.Data.Entities;
 
 [Table(Tables.Location)]
 [PrimaryKey(nameof(Id))]
+[Index(nameof(Country), IsUnique = true)]
 public record LocationEntity : Entity
 {
     [Column("country")]
@@ -14,13 +15,5 @@ public record LocationEntity : Entity
     [MaxLength(25, ErrorMessage = "Country must be no more than 5 characters.")]
     public required string Country { get; set; }
 
-    [Column("region")]
-    [MinLength(5, ErrorMessage = "Region must be at least 5 characters.")]
-    [MaxLength(25, ErrorMessage = "Region must be no more than 25 characters.")]
-    public required string Region { get; set; }
-
-    [Column("city")]
-    [MinLength(3, ErrorMessage = "City must be at least 3 characters.")]  
-    [MaxLength(25, ErrorMessage = "City must be no more than 25 characters.")]
-    public required string City { get; set; }
+    public List<UserEntity>? User { get; set; }
 }

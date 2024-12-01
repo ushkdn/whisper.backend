@@ -14,19 +14,19 @@ public class UserController(IUserService userService) : Controller
     {
         return await userService.Register(user);
     }
-    
+
     [HttpPost("/login")]
     public async Task<ServiceResponse<string>> ForgotPassword([FromBody] UserForgotPasswordDto user)
     {
         return await userService.ForgotPassword(user);
     }
-    
+
     [HttpPost("/reset-password")]
     public async Task<ServiceResponse<string>> ResetPassword([FromBody] UserResetPasswordDto user)
     {
         return await userService.ResetPassword(user);
     }
-    
+
     [HttpPost("/log-in")]
     public async Task<ServiceResponse<string>> LogIn([FromBody] UserLogInDto user)
     {

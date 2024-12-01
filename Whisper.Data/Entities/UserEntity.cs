@@ -7,6 +7,8 @@ namespace Whisper.Data.Entities;
 
 [Table(Tables.User)]
 [PrimaryKey(nameof(Id))]
+[Index(nameof(Email), IsUnique = true)]
+[Index(nameof(PhoneNumber), IsUnique = true)]
 public record UserEntity : EntityBase
 {
     [Column("surname")]
@@ -16,7 +18,7 @@ public record UserEntity : EntityBase
     [Column("name")]
     [Required(ErrorMessage = "Name is required")]
     public string Name { get; set; } = string.Empty;
-    
+
     [Column("username")]
     [MinLength(4, ErrorMessage = "Username cannot be less than 4 characters")]
     [MaxLength(15, ErrorMessage = "Username cannot be longer than 15 characters")]
@@ -33,7 +35,7 @@ public record UserEntity : EntityBase
     [EmailAddress(ErrorMessage = "Invalid email address")]
     public string Email { get; set; } = string.Empty;
 
-    [Column("password")] 
+    [Column("password")]
     [Required(ErrorMessage = "Password is required")]
     [MinLength(5, ErrorMessage = "Password cannot be less than 5 characters")]
     [MaxLength(15, ErrorMessage = "Password cannot be longer than 15 characters")]
@@ -42,4 +44,6 @@ public record UserEntity : EntityBase
     [Column("birthday")]
     [Required(ErrorMessage = "Birthday is required")]
     public DateTime BirthDay { get; init; }
+
+    public LocationEntity? Location { get; set; }
 }

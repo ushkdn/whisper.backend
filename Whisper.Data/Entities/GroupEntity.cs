@@ -23,5 +23,4 @@ public record GroupEntity : EntityBase
     [Column("is_closed")]
     [Required(ErrorMessage = "Group status(open/closed) is required")]
     public bool IsClosed { get; set; }
-
 }

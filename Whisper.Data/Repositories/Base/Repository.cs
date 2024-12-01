@@ -16,17 +16,17 @@ public class Repository<TEntity>(WhisperDbContext context) : IRepository<TEntity
         context.Set<TEntity>().Add(entity);
     }
 
-    public virtual async Task<Lazy<int>> CreateAsync(TEntity entity)
+    public virtual async Task<Lazy<Guid>> CreateAsync(TEntity entity)
     {
         if (entity is EntityBase entityBase)
         {
             entityBase.DateCreated = DateTime.Now;
         }
         await context.Set<TEntity>().AddAsync(entity);
-        return new Lazy<int>(() => entity.Id);
+        return new Lazy<Guid>(() => entity.Id);
     }
 
-    public virtual List<Lazy<int>> CreateRange(List<TEntity> entities)
+    public virtual List<Lazy<Guid>> CreateRange(List<TEntity> entities)
     {
         foreach (var entity in entities)
         {
@@ -37,15 +37,16 @@ public class Repository<TEntity>(WhisperDbContext context) : IRepository<TEntity
         }
 
         context.Set<TEntity>().AddRange(entities);
-        var entitiesIds = new List<Lazy<int>>();
+
+        var entitiesIds = new List<Lazy<Guid>>();
         foreach (var entity in entities)
         {
-            entitiesIds.Add(new Lazy<int>(() => entity.Id));
+            entitiesIds.Add(new Lazy<Guid>(() => entity.Id));
         }
         return entitiesIds;
     }
 
-    public virtual async Task<List<Lazy<int>>> CreateRangeAsync(List<TEntity> entities)
+    public virtual async Task<List<Lazy<Guid>>> CreateRangeAsync(List<TEntity> entities)
     {
         foreach (var entity in entities)
         {
@@ -55,10 +56,11 @@ public class Repository<TEntity>(WhisperDbContext context) : IRepository<TEntity
             }
         }
         await context.Set<TEntity>().AddRangeAsync(entities);
-        var entitiesId = new List<Lazy<int>>();
+
+        var entitiesId = new List<Lazy<Guid>>();
         foreach (var entity in entities)
         {
-            entitiesId.Add(new Lazy<int>(() => entity.Id));
+            entitiesId.Add(new Lazy<Guid>(() => entity.Id));
         }
         return entitiesId;
     }
@@ -73,7 +75,7 @@ public class Repository<TEntity>(WhisperDbContext context) : IRepository<TEntity
         return await context.Set<TEntity>().ToListAsync();
     }
 
-    public virtual async Task<TEntity> GetByIdAsync(int id)
+    public virtual async Task<TEntity> GetByIdAsync(Guid id)
     {
         return await context.Set<TEntity>().FindAsync(id)
             ?? throw new KeyNotFoundException($"Unable to find {nameof(TEntity)} with id: {id}");

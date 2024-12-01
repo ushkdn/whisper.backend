@@ -13,7 +13,8 @@ public class CacheRepository : ICacheRepository
     {
         cache = redis.GetDatabase();
     }
-     public async Task<TTable> GetSingleAsync<TTable>(string key, int id) where TTable : class, IEntity
+
+    public async Task<TTable> GetSingleAsync<TTable>(string key, Guid id) where TTable : class, IEntity
     {
         var storedList = await GetListAsync<TTable>(key);
 
@@ -52,7 +53,7 @@ public class CacheRepository : ICacheRepository
         await cache.ListRightPushAsync(key, JsonConvert.SerializeObject(value));
     }
 
-    public async Task RemoveByIdAsync<TTable>(string key, int id) where TTable : class, IEntity
+    public async Task RemoveByIdAsync<TTable>(string key, Guid id) where TTable : class, IEntity
     {
         var cachedList = await GetListAsync<TTable>(key);
         int elementEntryId = cachedList.FindIndex(x => x.Id == id);

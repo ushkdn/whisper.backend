@@ -1,0 +1,27 @@
+services:
+
+   whisper.postgres:
+    image: postgres:17
+    container_name: whisper.postgres
+    ports:
+        - 6434:5432
+    environment:
+        POSTGRES_DB: whisper
+        POSTGRES_USER: whisper_admin
+        POSTGRES_PASSWORD: whisper_admin_access
+    volumes:
+        - pgdata:/var/lib/postgresql/data
+
+   whisper.redis:
+    image: redis:7.4-alpine
+    container_name: whisper.redis
+    ports:
+        - 6399:6379
+    volumes:
+        - redisdata:/data
+    depends_on:
+        - whisper.postgres
+
+volumes:
+    pgdata:
+    redisdata:

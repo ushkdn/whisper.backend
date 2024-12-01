@@ -7,6 +7,7 @@ using Whisper.Data.Repositories.CacheRepository;
 using Whisper.Data.Repositories.GroupRepository;
 using Whisper.Data.Repositories.LocationRepository;
 using Whisper.Data.Repositories.UserRepository;
+using Whisper.Data.Transactions;
 
 namespace Whisper.Data;
 
@@ -18,6 +19,7 @@ public class DependencyContainerConfiguration(IServiceCollection services, IConf
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IGroupRepository, GroupRepository>();
         services.AddScoped<ILocationRepository, LocationRepository>();
+        services.AddScoped<ITransactionManager, TransactionManager>();
         return this;
     }
 
@@ -45,6 +47,7 @@ public class DependencyContainerConfiguration(IServiceCollection services, IConf
 
         return this;
     }
+
     public DependencyContainerConfiguration SetNpgsqlContext()
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

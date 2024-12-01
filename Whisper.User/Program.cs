@@ -14,12 +14,12 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddOpenApi();
 
-
         builder.Services.AddScoped<IUserService, UserService>();
 
         new DependencyContainerConfiguration(builder.Services, builder.Configuration)
             .RegisterServices()
             .RegisterDatabase("Postgres")
+            .RegisterCacheStorage("Redis")
             .SetNpgsqlContext();
 
         var app = builder.Build();
