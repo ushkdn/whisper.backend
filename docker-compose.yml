@@ -1,6 +1,14 @@
 services:
+  whisper.user:
+    image: ${DOCKER_REGISTRY-}whisperuser
+    build:
+      context: .
+      dockerfile: Whisper.User/Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
 
-   whisper.postgres:
+  whisper.postgres:
     image: postgres:17
     container_name: whisper.postgres
     ports:
@@ -12,7 +20,7 @@ services:
     volumes:
         - pgdata:/var/lib/postgresql/data
 
-   whisper.redis:
+  whisper.redis:
     image: redis:7.4-alpine
     container_name: whisper.redis
     ports:
@@ -25,3 +33,4 @@ services:
 volumes:
     pgdata:
     redisdata:
+

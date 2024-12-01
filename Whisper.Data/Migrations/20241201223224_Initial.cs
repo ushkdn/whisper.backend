@@ -51,6 +51,7 @@ namespace Whisper.Data.Migrations
                     email = table.Column<string>(type: "text", nullable: false),
                     password = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
                     birthday = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    LocationId = table.Column<Guid>(type: "uuid", nullable: true),
                     date_created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     date_updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -58,11 +59,10 @@ namespace Whisper.Data.Migrations
                 {
                     table.PrimaryKey("PK_users", x => x.id);
                     table.ForeignKey(
-                        name: "FK_users_locations_id",
-                        column: x => x.id,
+                        name: "FK_users_locations_LocationId",
+                        column: x => x.LocationId,
                         principalTable: "locations",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -76,6 +76,11 @@ namespace Whisper.Data.Migrations
                 table: "users",
                 column: "email",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_users_LocationId",
+                table: "users",
+                column: "LocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_users_phone_number",

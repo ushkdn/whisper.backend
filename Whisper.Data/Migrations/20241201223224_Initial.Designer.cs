@@ -12,7 +12,7 @@ using Whisper.Data;
 namespace Whisper.Data.Migrations
 {
     [DbContext(typeof(WhisperDbContext))]
-    [Migration("20241201210944_Initial")]
+    [Migration("20241201223224_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -84,6 +84,7 @@ namespace Whisper.Data.Migrations
             modelBuilder.Entity("Whisper.Data.Entities.UserEntity", b =>
                 {
                     b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
@@ -103,6 +104,9 @@ namespace Whisper.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("email");
+
+                    b.Property<Guid?>("LocationId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -137,6 +141,8 @@ namespace Whisper.Data.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("LocationId");
+
                     b.HasIndex("PhoneNumber")
                         .IsUnique();
 
@@ -147,9 +153,7 @@ namespace Whisper.Data.Migrations
                 {
                     b.HasOne("Whisper.Data.Entities.LocationEntity", "Location")
                         .WithMany("User")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LocationId");
 
                     b.Navigation("Location");
                 });

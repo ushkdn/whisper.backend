@@ -1,5 +1,6 @@
 using Whisper.Data;
 using Whisper.Services.UserService;
+using Whisper.Data.Extensions;
 
 namespace Whisper.User;
 
@@ -32,11 +33,15 @@ public class Program
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
                 c.RoutePrefix = string.Empty;
             });
+
+            app.ApplyMigrations();
         }
 
         app.UseHttpsRedirection();
 
         app.UseAuthorization();
+
+        app.UseCors("AllowAll");
 
         app.MapControllers();
 
