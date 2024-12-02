@@ -48,13 +48,11 @@ public class UserService(IUserRepository userRepository, ITransactionManager tra
             UserEntity storedUser = null;
             if (Regex.IsMatch(request.EmailOrPhoneNumber, EMAIL_REGEX))
             {
-                storedUser = await userRepository.GetByEmailAsync(request.EmailOrPhoneNumber)
-                    ?? throw new ArgumentException("Wrong email or phone number.");
+                storedUser = await userRepository.GetByEmailAsync(request.EmailOrPhoneNumber);
             }
             else
             {
-                storedUser = await userRepository.GetByPhoneNumberAsync(request.EmailOrPhoneNumber)
-                    ?? throw new ArgumentException("Wrong email or phone number.");
+                storedUser = await userRepository.GetByPhoneNumberAsync(request.EmailOrPhoneNumber);
             }
 
             if (!BCrypt.Net.BCrypt.Verify(request.Password, storedUser.Password))

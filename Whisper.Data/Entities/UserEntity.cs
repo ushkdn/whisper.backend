@@ -39,7 +39,7 @@ public record UserEntity : EntityBase
     [Required(ErrorMessage = "Password is required")]
     [MinLength(5, ErrorMessage = "Password cannot be less than 5 characters")]
     //max - 120 coz hashed password string
-    [MaxLength(120, ErrorMessage = "Password cannot be longer than 15 characters")]
+    [MaxLength(120, ErrorMessage = "Password cannot be longer than 120 characters")]
     public required string Password { get; init; }
 
     [Column("birthday")]

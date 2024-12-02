@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
-namespace Whisper.Core.Registies;
+namespace Whisper.Core.Registries;
 
 public class DotEnvRegistry(IHostEnvironment env)
 {

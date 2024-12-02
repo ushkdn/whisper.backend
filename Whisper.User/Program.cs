@@ -1,7 +1,9 @@
 using Whisper.Data;
 using Whisper.Services.UserService;
 using Whisper.Data.Extensions;
-using Whisper.Core.Registies;
+using Whisper.Core.Registries;
+using Microsoft.OpenApi.Models;
+using System.Reflection;
 
 namespace Whisper.User;
 
@@ -13,7 +15,26 @@ public class Program
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen();
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo
+            {
+                Title = "Whisper.User API",
+                Version = "v1",
+                Description = "An API to perform user operations",
+                TermsOfService = new Uri("https://example.com/terms"),
+                Contact = new OpenApiContact
+                {
+                    Name = "Ushkan Daniil",
+                    Email = "ushkndn@gmal.com",
+                    Url = new Uri("https://github.com/ushkdn"),
+                }
+            });
+            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+            c.IncludeXmlComments(xmlPath);
+        });
+
         builder.Services.AddOpenApi();
 
         _ = new DotEnvRegistry(builder.Environment)

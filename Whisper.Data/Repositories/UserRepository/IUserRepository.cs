@@ -6,7 +6,7 @@ namespace Whisper.Data.Repositories.UserRepository;
 
 public interface IUserRepository : IRepository<UserEntity>
 {
-    Task<UserEntity?> GetByEmailAsync(string email);
+    Task<UserEntity> GetByEmailAsync(string email);
 
-    Task<UserEntity?> GetByPhoneNumberAsync(string phoneNumber);
+    Task<UserEntity> GetByPhoneNumberAsync(string phoneNumber);
 }
