@@ -1,10 +1,11 @@
+using Newtonsoft.Json;
 using Whisper.Data.Entities.Base;
 
 namespace Whisper.Data.Repositories.CacheRepository;
 
 public interface ICacheRepository
 {
-    Task<TTable> GetSingleAsync<TTable>(string key, Guid id) where TTable : class, IEntity;
+    Task<TTable> GetSingleFromListAsync<TTable>(string key, Guid id) where TTable : class, IEntity;
 
     Task<List<TTable>> GetListAsync<TTable>(string key) where TTable : class, IEntity;
 
@@ -15,4 +16,8 @@ public interface ICacheRepository
     Task RemoveByIdAsync<TTable>(string key, Guid id) where TTable : class, IEntity;
 
     Task RemoveAllAsync(string key);
+
+    Task SetSingleAsync<TTable>(string key, TTable value, DateTimeOffset? expirationDate = null) where TTable : class, IEntity;
+
+    Task<TTable> GetSingleAsync<TTable>(string key) where TTable : class, IEntity;
 }

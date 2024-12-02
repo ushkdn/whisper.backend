@@ -5,7 +5,7 @@ using Whisper.Data.Entities.Base;
 
 namespace Whisper.Data.Entities;
 
-[Table(Tables.User)]
+[Table(Tables.USER)]
 [PrimaryKey(nameof(Id))]
 [Index(nameof(Email), IsUnique = true)]
 [Index(nameof(PhoneNumber), IsUnique = true)]

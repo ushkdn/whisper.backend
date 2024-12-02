@@ -1,8 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.ComponentModel.DataAnnotations;
-using Whisper.Data.Dtos.Location;
 using Whisper.Data.Dtos.User;
-using Whisper.Data.Utils;
 using Whisper.Services.UserService;
 
 namespace Whisper.User.Controllers;

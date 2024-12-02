@@ -5,7 +5,7 @@ using Whisper.Data.Entities.Base;
 
 namespace Whisper.Data.Entities;
 
-[Table(Tables.Location)]
+[Table(Tables.LOCATION)]
 [PrimaryKey(nameof(Id))]
 [Index(nameof(Country), IsUnique = true)]
 public record LocationEntity : Entity
