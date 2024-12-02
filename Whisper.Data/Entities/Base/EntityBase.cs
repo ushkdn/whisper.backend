@@ -5,8 +5,8 @@ namespace Whisper.Data.Entities.Base;
 public abstract record EntityBase : Entity
 {
     [Column("date_created")]
-    public DateTime DateCreated { get; init; }
+    public DateTime DateCreated { get; set; }
 
     [Column("date_updated")]
-    public DateTime DateUpdated { get; init; }
+    public DateTime DateUpdated { get; set; }
 }

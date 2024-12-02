@@ -38,13 +38,16 @@ public record UserEntity : EntityBase
     [Column("password")]
     [Required(ErrorMessage = "Password is required")]
     [MinLength(5, ErrorMessage = "Password cannot be less than 5 characters")]
-    [MaxLength(15, ErrorMessage = "Password cannot be longer than 15 characters")]
+    //max - 120 coz hashed password string
+    [MaxLength(120, ErrorMessage = "Password cannot be longer than 15 characters")]
     public required string Password { get; init; }
 
     [Column("birthday")]
     [Required(ErrorMessage = "Birthday is required")]
     public required DateTime BirthDay { get; init; }
-    public required bool IsVerified { get; init; }
+
+    [Column("is_verified")]
+    public required bool IsVerified { get; init; } = false;
 
     [ForeignKey("location_id")]
     public virtual LocationEntity? Location { get; init; }

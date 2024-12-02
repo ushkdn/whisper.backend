@@ -12,7 +12,9 @@ public static class MigrationExtensions
 
         using WhisperDbContext dbContext =
             scope.ServiceProvider.GetRequiredService<WhisperDbContext>();
-
-        dbContext.Database.Migrate();
+        if (dbContext.Database.GetPendingMigrations().Any())
+        {
+            dbContext.Database.Migrate();
+        }
     }
 }

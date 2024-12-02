@@ -86,8 +86,8 @@ public class UserService(IUserRepository userRepository, ITransactionManager tra
         try
         {
             //remove all not verified accs via quartz every 1h??
-            var storedUser = await userRepository.GetByEmailAndPhoneNumberAsync(request.Email, request.PhoneNumber)
-                ?? throw new ArgumentException("User is already registered.");
+            //var storedUser = await userRepository.GetByEmailAndPhoneNumberAsync(request.Email, request.PhoneNumber)
+            //  ?? throw new ArgumentException("User is already registered.");
 
             request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
 

@@ -1,6 +1,7 @@
 using Whisper.Data;
 using Whisper.Services.UserService;
 using Whisper.Data.Extensions;
+using Whisper.Core.Registies;
 
 namespace Whisper.User;
 
@@ -15,13 +16,16 @@ public class Program
         builder.Services.AddSwaggerGen();
         builder.Services.AddOpenApi();
 
-        builder.Services.AddScoped<IUserService, UserService>();
+        _ = new DotEnvRegistry(builder.Environment)
+            .AddDotEnvConfiguration(builder.Configuration);
 
         new DependencyContainerConfiguration(builder.Services, builder.Configuration)
             .RegisterServices()
             .RegisterDatabase("Postgres")
             .RegisterCacheStorage("Redis")
             .SetNpgsqlContext();
+
+        builder.Services.AddScoped<IUserService, UserService>();
 
         var app = builder.Build();
 
@@ -41,7 +45,7 @@ public class Program
 
         app.UseAuthorization();
 
-        app.UseCors("AllowAll");
+        app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
         app.MapControllers();
 
