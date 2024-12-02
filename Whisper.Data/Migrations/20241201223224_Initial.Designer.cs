@@ -9,160 +9,159 @@ using Whisper.Data;
 
 #nullable disable
 
-namespace Whisper.Data.Migrations
+namespace Whisper.Data.Migrations;
+
+[DbContext(typeof(WhisperDbContext))]
+[Migration("20241201223224_Initial")]
+partial class Initial
 {
-    [DbContext(typeof(WhisperDbContext))]
-    [Migration("20241201223224_Initial")]
-    partial class Initial
+    /// <inheritdoc />
+    protected override void BuildTargetModel(ModelBuilder modelBuilder)
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
-        {
 #pragma warning disable 612, 618
-            modelBuilder
-                .HasAnnotation("ProductVersion", "9.0.0")
-                .HasAnnotation("Relational:MaxIdentifierLength", 63);
+        modelBuilder
+            .HasAnnotation("ProductVersion", "9.0.0")
+            .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
-            NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+        NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("Whisper.Data.Entities.GroupEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+        modelBuilder.Entity("Whisper.Data.Entities.GroupEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("date_created");
+                b.Property<DateTime>("DateCreated")
+                    .HasColumnType("timestamp without time zone")
+                    .HasColumnName("date_created");
 
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("date_updated");
+                b.Property<DateTime>("DateUpdated")
+                    .HasColumnType("timestamp without time zone")
+                    .HasColumnName("date_updated");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("description");
+                b.Property<string>("Description")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("description");
 
-                    b.Property<bool>("IsClosed")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_closed");
+                b.Property<bool>("IsClosed")
+                    .HasColumnType("boolean")
+                    .HasColumnName("is_closed");
 
-                    b.Property<string>("Title")
-                        .IsRequired()
-                        .HasMaxLength(20)
-                        .HasColumnType("character varying(20)")
-                        .HasColumnName("title");
+                b.Property<string>("Title")
+                    .IsRequired()
+                    .HasMaxLength(20)
+                    .HasColumnType("character varying(20)")
+                    .HasColumnName("title");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.ToTable("groups");
-                });
+                b.ToTable("groups");
+            });
 
-            modelBuilder.Entity("Whisper.Data.Entities.LocationEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+        modelBuilder.Entity("Whisper.Data.Entities.LocationEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
 
-                    b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(25)
-                        .HasColumnType("character varying(25)")
-                        .HasColumnName("country");
+                b.Property<string>("Country")
+                    .IsRequired()
+                    .HasMaxLength(25)
+                    .HasColumnType("character varying(25)")
+                    .HasColumnName("country");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("Country")
-                        .IsUnique();
+                b.HasIndex("Country")
+                    .IsUnique();
 
-                    b.ToTable("locations");
-                });
+                b.ToTable("locations");
+            });
 
-            modelBuilder.Entity("Whisper.Data.Entities.UserEntity", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid")
-                        .HasColumnName("id");
+        modelBuilder.Entity("Whisper.Data.Entities.UserEntity", b =>
+            {
+                b.Property<Guid>("Id")
+                    .ValueGeneratedOnAdd()
+                    .HasColumnType("uuid")
+                    .HasColumnName("id");
 
-                    b.Property<DateTime>("BirthDay")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("birthday");
+                b.Property<DateTime>("BirthDay")
+                    .HasColumnType("timestamp without time zone")
+                    .HasColumnName("birthday");
 
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("date_created");
+                b.Property<DateTime>("DateCreated")
+                    .HasColumnType("timestamp without time zone")
+                    .HasColumnName("date_created");
 
-                    b.Property<DateTime>("DateUpdated")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("date_updated");
+                b.Property<DateTime>("DateUpdated")
+                    .HasColumnType("timestamp without time zone")
+                    .HasColumnName("date_updated");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("email");
+                b.Property<string>("Email")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("email");
 
-                    b.Property<Guid?>("LocationId")
-                        .HasColumnType("uuid");
+                b.Property<Guid?>("LocationId")
+                    .HasColumnType("uuid");
 
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
+                b.Property<string>("Name")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("name");
 
-                    b.Property<string>("Password")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)")
-                        .HasColumnName("password");
+                b.Property<string>("Password")
+                    .IsRequired()
+                    .HasMaxLength(15)
+                    .HasColumnType("character varying(15)")
+                    .HasColumnName("password");
 
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasMaxLength(11)
-                        .HasColumnType("character varying(11)")
-                        .HasColumnName("phone_number");
+                b.Property<string>("PhoneNumber")
+                    .IsRequired()
+                    .HasMaxLength(11)
+                    .HasColumnType("character varying(11)")
+                    .HasColumnName("phone_number");
 
-                    b.Property<string>("Surname")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("surname");
+                b.Property<string>("Surname")
+                    .IsRequired()
+                    .HasColumnType("text")
+                    .HasColumnName("surname");
 
-                    b.Property<string>("Username")
-                        .IsRequired()
-                        .HasMaxLength(15)
-                        .HasColumnType("character varying(15)")
-                        .HasColumnName("username");
+                b.Property<string>("Username")
+                    .IsRequired()
+                    .HasMaxLength(15)
+                    .HasColumnType("character varying(15)")
+                    .HasColumnName("username");
 
-                    b.HasKey("Id");
+                b.HasKey("Id");
 
-                    b.HasIndex("Email")
-                        .IsUnique();
+                b.HasIndex("Email")
+                    .IsUnique();
 
-                    b.HasIndex("LocationId");
+                b.HasIndex("LocationId");
 
-                    b.HasIndex("PhoneNumber")
-                        .IsUnique();
+                b.HasIndex("PhoneNumber")
+                    .IsUnique();
 
-                    b.ToTable("users");
-                });
+                b.ToTable("users");
+            });
 
-            modelBuilder.Entity("Whisper.Data.Entities.UserEntity", b =>
-                {
-                    b.HasOne("Whisper.Data.Entities.LocationEntity", "Location")
-                        .WithMany("User")
-                        .HasForeignKey("LocationId");
+        modelBuilder.Entity("Whisper.Data.Entities.UserEntity", b =>
+            {
+                b.HasOne("Whisper.Data.Entities.LocationEntity", "Location")
+                    .WithMany("User")
+                    .HasForeignKey("LocationId");
 
-                    b.Navigation("Location");
-                });
+                b.Navigation("Location");
+            });
 
-            modelBuilder.Entity("Whisper.Data.Entities.LocationEntity", b =>
-                {
-                    b.Navigation("User");
-                });
+        modelBuilder.Entity("Whisper.Data.Entities.LocationEntity", b =>
+            {
+                b.Navigation("User");
+            });
 #pragma warning restore 612, 618
-        }
     }
 }

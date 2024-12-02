@@ -45,7 +45,11 @@ public record UserEntity : EntityBase
     [Required(ErrorMessage = "Birthday is required")]
     public required DateTime BirthDay { get; init; }
 
+    [ForeignKey(nameof(Location.Id))]
     public required LocationEntity Location { get; init; }
 
     public required bool IsVerified { get; init; }
+
+    [ForeignKey(nameof(RefreshToken.Id))]
+    public required RefreshTokenEntity RefreshToken { get; init; }
 }
