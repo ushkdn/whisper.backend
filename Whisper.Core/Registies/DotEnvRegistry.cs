@@ -10,7 +10,7 @@ public class DotEnvRegistry(IHostEnvironment env)
         var name = env.EnvironmentName;
         configBuilder.AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                      .AddJsonFile($"appsettings.{name}.json", optional: true, reloadOnChange: true)
-                     .AddEnvironmentVariables("OCT_");
+                     .AddEnvironmentVariables();
         return this;
     }
 }

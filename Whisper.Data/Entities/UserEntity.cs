@@ -44,12 +44,11 @@ public record UserEntity : EntityBase
     [Column("birthday")]
     [Required(ErrorMessage = "Birthday is required")]
     public required DateTime BirthDay { get; init; }
-
-    [ForeignKey(nameof(Location.Id))]
-    public required LocationEntity Location { get; init; }
-
     public required bool IsVerified { get; init; }
 
-    [ForeignKey(nameof(RefreshToken.Id))]
-    public required RefreshTokenEntity RefreshToken { get; init; }
+    [ForeignKey("location_id")]
+    public virtual LocationEntity? Location { get; init; }
+
+    [ForeignKey("refresh_token_id")]
+    public virtual RefreshTokenEntity? RefreshToken { get; init; }
 }

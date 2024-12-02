@@ -9,6 +9,6 @@ public record RefreshTokenEntity : EntityBase
 
     public required DateTime ExpireDate { get; init; }
 
-    [ForeignKey(nameof(User.Id))]
-    public required UserEntity User { get; init; }
+    [ForeignKey("user_id")]
+    public virtual UserEntity? User { get; init; }
 }
