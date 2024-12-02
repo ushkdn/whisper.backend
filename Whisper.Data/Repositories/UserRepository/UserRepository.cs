@@ -6,10 +6,17 @@ namespace Whisper.Data.Repositories.UserRepository;
 
 internal sealed class UserRepository(WhisperDbContext context) : Repository<UserEntity>(context), IUserRepository
 {
-
-    public async Task<UserEntity> GetByEmailOrPhoneNumberAsync(string emailOrPhoneNumber)
+    public async Task<UserEntity?> GetByEmailAsync(string email)
     {
-         return await DbContext.Users.Where(x => x.Email == emailOrPhoneNumber || x.PhoneNumber == emailOrPhoneNumber)
-            .FirstOrDefaultAsync() ?? throw new KeyNotFoundException("User with given email or phone number was not found");
+        return await DbContext.Users
+            .Where(x => x.Email == email)
+            .FirstOrDefaultAsync();
+    }
+
+    public async Task<UserEntity?> GetByPhoneNumberAsync(string phoneNumber)
+    {
+        return await DbContext.Users
+            .Where(x => x.PhoneNumber == phoneNumber)
+            .FirstOrDefaultAsync();
     }
 }

@@ -27,7 +27,7 @@ namespace Whisper.Data.Dtos.User
         [Required(ErrorMessage = "Password is required")]
         [MinLength(5, ErrorMessage = "Password cannot be less than 5 characters")]
         [MaxLength(15, ErrorMessage = "Password cannot be longer than 15 characters")]
-        public required string Password { get; init; }
+        public required string Password { get; set; }
 
         [Required(ErrorMessage = "Confirm password is required")]
         [Compare("Password", ErrorMessage = "Passwords do not match")]

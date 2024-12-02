@@ -5,11 +5,11 @@ namespace Whisper.Services.UserService;
 
 public interface IUserService
 {
-    Task<ServiceResponse<string>> Register(UserRegisterDto user);
+    Task<ServiceResponse<string>> Register(UserRegisterDto request);
 
-    Task<ServiceResponse<string>> LogIn(UserLogInDto user);
+    Task<ServiceResponse<string>> LogIn(UserLogInDto request);
 
-    Task<ServiceResponse<string>> ForgotPassword(UserForgotPasswordDto user);
+    Task<ServiceResponse<string>> ForgotPassword(UserForgotPasswordDto request);
 
-    Task<ServiceResponse<string>> ResetPassword(UserResetPasswordDto user);
+    Task<ServiceResponse<string>> ResetPassword(UserResetPasswordDto request);
 }

@@ -3,6 +3,7 @@ using Whisper.Data.Dtos.User;
 using Whisper.Data.Entities;
 using Whisper.Data.Extensions;
 using Whisper.Data.Mapping;
+using Whisper.Data.Models;
 using Whisper.Data.Repositories.CacheRepository;
 using Whisper.Data.Repositories.UserRepository;
 using Whisper.Data.Transactions;
@@ -12,13 +13,14 @@ namespace Whisper.Services.UserService;
 
 public class UserService(IUserRepository userRepository, ITransactionManager transactionManager, ICacheRepository cacheRepository) : IUserService
 {
-    public async Task<ServiceResponse<string>> ForgotPassword(UserForgotPasswordDto user)
+    private const string EMAIL_REGEX = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
+
+    public async Task<ServiceResponse<string>> ForgotPassword(UserForgotPasswordDto request)
     {
         var serviceResponse = new ServiceResponse<string>();
-        const string EMAIL_REGEX = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
         try
         {
-            if (Regex.IsMatch(user.EmailOrPhoneNumber, EMAIL_REGEX))
+            if (Regex.IsMatch(request.EmailOrPhoneNumber, EMAIL_REGEX))
             {
                 //
             }
@@ -38,19 +40,37 @@ public class UserService(IUserRepository userRepository, ITransactionManager tra
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<string>> LogIn(UserLogInDto user)
+    public async Task<ServiceResponse<string>> LogIn(UserLogInDto request)
     {
         var serviceResponse = new ServiceResponse<string>();
         try
         {
-            var storedUser = await userRepository.GetByEmailOrPhoneNumberAsync(user.EmailOrPhoneNumber);
-            if (storedUser.Password != user.Password)
+            UserEntity storedUser = null;
+            if (Regex.IsMatch(request.EmailOrPhoneNumber, EMAIL_REGEX))
             {
-                throw new ArgumentException("Incorrect email/phone-number or password");
+                storedUser = await userRepository.GetByEmailAsync(request.EmailOrPhoneNumber)
+                    ?? throw new ArgumentException("Wrong email or phone number.");
+            }
+            else
+            {
+                storedUser = await userRepository.GetByPhoneNumberAsync(request.EmailOrPhoneNumber)
+                    ?? throw new ArgumentException("Wrong email or phone number.");
             }
 
+            if (!BCrypt.Net.BCrypt.Verify(request.Password, storedUser.Password))
+            {
+                throw new ArgumentException("Wrong email/phonenumber or password.");
+            }
+
+            if (!storedUser.IsVerified)
+            {
+                throw new InvalidOperationException("Your account is not verified.");
+            }
+
+            //token zone should be here
+
             serviceResponse.Success = true;
-            serviceResponse.Message = "Log In Success";
+            serviceResponse.Message = "Your are logged in";
             serviceResponse.StatusCode = 201;
         }
         catch (Exception ex)
@@ -60,13 +80,20 @@ public class UserService(IUserRepository userRepository, ITransactionManager tra
         return serviceResponse;
     }
 
-    public async Task<ServiceResponse<string>> Register(UserRegisterDto user)
+    public async Task<ServiceResponse<string>> Register(UserRegisterDto request)
     {
         var serviceResponse = new ServiceResponse<string>();
         try
         {
-            await userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(user));
+            //remove all not verified accs via quartz every 1h??
+            var storedUser = await userRepository.GetByEmailAndPhoneNumberAsync(request.Email, request.PhoneNumber)
+                ?? throw new ArgumentException("User is already registered.");
+
+            request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+            await userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(request));
             await transactionManager.SaveChangesAsync();
+            //mail send here
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;
             serviceResponse.Message = "Your account has been created";

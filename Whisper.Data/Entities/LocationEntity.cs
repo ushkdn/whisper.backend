@@ -15,5 +15,5 @@ public record LocationEntity : Entity
     [MaxLength(25, ErrorMessage = "Country must be no more than 5 characters.")]
     public required string Country { get; set; }
 
-    public List<UserEntity>? User { get; set; }
+    public required List<UserEntity> User { get; set; }
 }
