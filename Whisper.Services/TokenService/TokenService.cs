@@ -1,10 +1,10 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using Whisper.Core.Helpers;
 using Whisper.Data.Extensions;
 using Whisper.Data.Models;
 using Whisper.Data.Utils;
@@ -13,6 +13,8 @@ namespace Whisper.Services.TokenService;
 
 public class TokenService(IConfiguration configuration) : ITokenService
 {
+    private readonly string tokenHashKey = configuration.GetStringOrThrow("Token:HashKey");
+
     public async Task<ServiceResponse<string>> RefreshToken()
     {
         var serviceResponse = new ServiceResponse<string>();
@@ -48,7 +50,7 @@ public class TokenService(IConfiguration configuration) : ITokenService
             new Claim(ClaimTypes.Email, userModel.Email),
         };
 
-        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration.GetSection("").Value));
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenHashKey));
         var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
         var token = new JwtSecurityToken(

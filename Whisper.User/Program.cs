@@ -1,9 +1,11 @@
-using Whisper.Data;
-using Whisper.Services.UserService;
-using Whisper.Data.Extensions;
-using Whisper.Core.Registries;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+
+using Whisper.Core.Registries;
+
+using Whisper.Data;
+using Whisper.Data.Extensions;
+using Whisper.Services.UserService;
 
 namespace Whisper.User;
 

@@ -1,5 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Whisper.Data.Entities;
+﻿using Whisper.Data.Entities;
 using Whisper.Data.Repositories.Base;
 
 namespace Whisper.Data.Repositories.UserRepository;

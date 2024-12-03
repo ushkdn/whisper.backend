@@ -19,5 +19,4 @@ public partial class WhisperMapper
         }
         mapper ??= configuration.CreateMapper();
     }
-    
 }

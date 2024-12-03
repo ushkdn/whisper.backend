@@ -1,4 +1,5 @@
 ﻿using Whisper.Data.Utils;
+
 namespace Whisper.Data.Extensions;
 
 public static class ExceptionExtension

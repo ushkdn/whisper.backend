@@ -3,7 +3,6 @@ using Whisper.Data.Dtos.User;
 using Whisper.Data.Entities;
 using Whisper.Data.Extensions;
 using Whisper.Data.Mapping;
-using Whisper.Data.Models;
 using Whisper.Data.Repositories.CacheRepository;
 using Whisper.Data.Repositories.UserRepository;
 using Whisper.Data.Transactions;

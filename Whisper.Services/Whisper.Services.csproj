@@ -16,6 +16,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Whisper.Core\Whisper.Core.csproj" />
     <ProjectReference Include="..\Whisper.Data\Whisper.Data.csproj" />
   </ItemGroup>
 

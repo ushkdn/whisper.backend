@@ -1,16 +1,23 @@
-﻿using MimeKit;
-using MimeKit.Text;
-using Whisper.Data.Extensions;
-using Whisper.Data.Utils;
-using MailKit.Net.Smtp;
+﻿using MailKit.Net.Smtp;
 using MailKit.Security;
+using Microsoft.Extensions.Configuration;
+
+using MimeKit;
+using MimeKit.Text;
+using Whisper.Core.Helpers;
+using Whisper.Data.Extensions;
 using Whisper.Data.Repositories.CacheRepository;
-using Whisper.Data;
+using Whisper.Data.Utils;
 
 namespace Whisper.Services.MessageService.EmailService;
 
-public class EmailService(ICacheRepository cacheRepository) : IEmailService
+public class EmailService(ICacheRepository cacheRepository, IConfiguration configuration) : IEmailService
 {
+    private readonly string whisperMessagingEmailEmail = configuration.GetStringOrThrow("Messaging:Email:Email");
+    private readonly string whisperMessagingEmailHost = configuration.GetStringOrThrow("Messaging:Email:Host");
+    private readonly string whisperMessagingEmailPassword = configuration.GetStringOrThrow("Messaging:Email:Password");
+    private readonly int whisperMessagingEmailPort = int.Parse(configuration.GetStringOrThrow("Messaging:Email:Port"));
+
     public async Task<ServiceResponse<string>> SendMessage<T>(MessagePayload messagePayload)
     {
         //fetch from configuration
@@ -18,7 +25,7 @@ public class EmailService(ICacheRepository cacheRepository) : IEmailService
         try
         {
             var emailMessage = new MimeMessage();
-            emailMessage.From.Add(MailboxAddress.Parse("conf string"));
+            emailMessage.From.Add(MailboxAddress.Parse(whisperMessagingEmailEmail));
             emailMessage.To.Add(MailboxAddress.Parse(messagePayload.User));
             emailMessage.Body = new TextPart(TextFormat.Plain)
             {
@@ -28,14 +35,14 @@ public class EmailService(ICacheRepository cacheRepository) : IEmailService
             var smtp = new SmtpClient();
 
             smtp.Connect(
-                "host",
-                1234,
+                whisperMessagingEmailHost,
+                whisperMessagingEmailPort,
                 SecureSocketOptions.StartTls
             );
 
             smtp.Authenticate(
-                "adminEmail",
-                "adminPassword"
+                whisperMessagingEmailEmail,
+                whisperMessagingEmailPassword
             );
 
             await smtp.SendAsync(emailMessage);

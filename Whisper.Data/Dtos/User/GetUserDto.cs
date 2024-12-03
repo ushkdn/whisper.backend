@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Whisper.Data.Dtos.Location;
+﻿using Whisper.Data.Dtos.Location;
 using Whisper.Data.Entities.Base;
 
 namespace Whisper.Data.Dtos.User;
