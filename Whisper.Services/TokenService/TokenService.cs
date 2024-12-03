@@ -15,20 +15,8 @@ public class TokenService(IConfiguration configuration) : ITokenService
 {
     private readonly string tokenHashKey = configuration.GetStringOrThrow("Token:HashKey");
 
-    public async Task<ServiceResponse<string>> RefreshToken()
+    public async Task RefreshToken()
     {
-        var serviceResponse = new ServiceResponse<string>();
-        try
-        {
-            serviceResponse.Success = true;
-            serviceResponse.Message = "New refresh token generated.";
-            serviceResponse.StatusCode = 200;
-        }
-        catch (Exception ex)
-        {
-            serviceResponse = ex.ToServiceResponse<string>();
-        }
-        return serviceResponse;
     }
 
     private RefreshTokenModel CreateRefreshToken()

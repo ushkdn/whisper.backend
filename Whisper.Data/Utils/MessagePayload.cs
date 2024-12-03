@@ -2,7 +2,11 @@
 
 public record MessagePayload
 {
-    public required string User { get; set; }
+    public string? UserEmail { get; set; }
+
+    public int? UserId { get; set; }
+
+    public string? Username { get; set; }
 
     public string? Topic { get; set; }
 

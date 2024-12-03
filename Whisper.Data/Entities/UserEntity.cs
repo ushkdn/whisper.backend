@@ -25,10 +25,9 @@ public record UserEntity : EntityBase
     public required string Username { get; init; }
 
     [Column("phone_number")]
-    [Required(ErrorMessage = "Phone number is required")]
     [MinLength(11, ErrorMessage = "Phone number cannot be less than 11 characters")]
     [MaxLength(11, ErrorMessage = "Phone number cannot be longer than 11 characters")]
-    public required string PhoneNumber { get; init; }
+    public string? PhoneNumber { get; init; }
 
     [Column("email")]
     [Required(ErrorMessage = "Email is required")]

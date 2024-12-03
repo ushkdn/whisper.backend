@@ -1,124 +1,109 @@
 ﻿using System.Text.RegularExpressions;
+using Whisper.Data;
+using Whisper.Data.CacheModels;
 using Whisper.Data.Dtos.User;
 using Whisper.Data.Entities;
-using Whisper.Data.Extensions;
 using Whisper.Data.Mapping;
+using Whisper.Data.Models;
 using Whisper.Data.Repositories.CacheRepository;
 using Whisper.Data.Repositories.UserRepository;
 using Whisper.Data.Transactions;
 using Whisper.Data.Utils;
+using Whisper.Services.MessageService;
 
 namespace Whisper.Services.UserService;
 
-public class UserService(IUserRepository userRepository, ITransactionManager transactionManager, ICacheRepository cacheRepository) : IUserService
+public class UserService(IUserRepository userRepository,
+    ITransactionManager transactionManager,
+    ICacheRepository cacheRepository,
+    IMessageService messageService) : IUserService
 {
     private const string EMAIL_REGEX = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
 
-    public async Task<ServiceResponse<string>> ForgotPassword(UserForgotPasswordDto request)
+    public async Task ForgotPassword(UserForgotPasswordDto request)
     {
-        var serviceResponse = new ServiceResponse<string>();
-        try
+        if (Regex.IsMatch(request.EmailOrPhoneNumber, EMAIL_REGEX))
         {
-            if (Regex.IsMatch(request.EmailOrPhoneNumber, EMAIL_REGEX))
-            {
-                //
-            }
-            else
-            {
-                //
-            }
-            serviceResponse.Success = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Code for password reset sent";
+            //
         }
-        catch (Exception ex)
+        else
         {
-            serviceResponse = ex.ToServiceResponse<string>();
+            //
         }
-
-        return serviceResponse;
     }
 
-    public async Task<ServiceResponse<string>> LogIn(UserLogInDto request)
+    public async Task LogIn(UserLogInDto request)
     {
-        var serviceResponse = new ServiceResponse<string>();
-        try
+        UserEntity storedUser = null;
+        if (Regex.IsMatch(request.EmailOrPhoneNumber, EMAIL_REGEX))
         {
-            UserEntity storedUser = null;
-            if (Regex.IsMatch(request.EmailOrPhoneNumber, EMAIL_REGEX))
-            {
-                storedUser = await userRepository.GetByEmailAsync(request.EmailOrPhoneNumber);
-            }
-            else
-            {
-                storedUser = await userRepository.GetByPhoneNumberAsync(request.EmailOrPhoneNumber);
-            }
-
-            if (!BCrypt.Net.BCrypt.Verify(request.Password, storedUser.Password))
-            {
-                throw new ArgumentException("Wrong email/phonenumber or password.");
-            }
-
-            if (!storedUser.IsVerified)
-            {
-                throw new InvalidOperationException("Your account is not verified.");
-            }
-
-            //token zone should be here
-
-            serviceResponse.Success = true;
-            serviceResponse.Message = "Your are logged in";
-            serviceResponse.StatusCode = 201;
+            storedUser = await userRepository.GetByEmailAsync(request.EmailOrPhoneNumber);
         }
-        catch (Exception ex)
+        else
         {
-            serviceResponse = ex.ToServiceResponse<string>();
+            storedUser = await userRepository.GetByPhoneNumberAsync(request.EmailOrPhoneNumber);
         }
-        return serviceResponse;
+
+        if (!BCrypt.Net.BCrypt.Verify(request.Password, storedUser.Password))
+        {
+            throw new ArgumentException("Wrong email/phonenumber or password.");
+        }
+
+        if (!storedUser.IsVerified)
+        {
+            throw new InvalidOperationException("Your account is not verified.");
+        }
+
+        //token zone should be here
     }
 
-    public async Task<ServiceResponse<string>> Register(UserRegisterDto request)
+    public async Task Register(UserRegisterDto request)
     {
-        var serviceResponse = new ServiceResponse<string>();
-        try
+        //remove all not verified accs via quartz every 1h??
+        var storedUser = await userRepository.GetByEmailAsync(request.Email);
+        if (storedUser is not null)
         {
-            //remove all not verified accs via quartz every 1h??
-            var storedUser = await userRepository.GetByEmailAndPhoneNumberAsync(request.Email, request.PhoneNumber);
-            if (storedUser is not null)
-            {
-                throw new InvalidOperationException("User already exists.");
-            }
-
-            request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
-            await userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(request));
-            await transactionManager.SaveChangesAsync();
-            //mail send here
-            serviceResponse.Success = true;
-            serviceResponse.StatusCode = 201;
-            serviceResponse.Message = "Your account has been created";
+            throw new InvalidOperationException("User already exists.");
         }
-        catch (Exception ex)
-        {
-            serviceResponse = ex.ToServiceResponse<string>();
-        }
-        return serviceResponse;
+
+        request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
+
+        await userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(request));
+        await transactionManager.SaveChangesAsync();
+
+        await messageService.SendMessage(new MessagePayload { UserEmail = request.Email, });
+        //mail send here
     }
 
-    public async Task<ServiceResponse<string>> ResetPassword(UserResetPasswordDto user)
+    public async Task ResetPassword(UserResetPasswordDto user)
     {
-        var serviceResponse = new ServiceResponse<string>();
-        try
+    }
+
+    public async Task Verify(UserVerifyDto request)
+    {
+        var cachedSecretCode = await cacheRepository.GetSingleAsync<CacheSecretCode>(
+            CacheTables.SECRET_CODE + $":{request.Email}"
+        );
+
+        if (cachedSecretCode is null)
         {
-            serviceResponse.Success = true;
-            serviceResponse.StatusCode = 200;
-            serviceResponse.Message = "Password changed";
-        }
-        catch (Exception ex)
-        {
-            serviceResponse = ex.ToServiceResponse<string>();
+            throw new ArgumentNullException("Your secret code expires. Please try again.");
         }
 
-        return serviceResponse;
+        if (request.SecretCode != cachedSecretCode.SecretCode)
+        {
+            throw new ArgumentException("Wrong email or secret code.");
+        }
+
+        var storedUser = WhisperMapper.Mapper.Map<UserModel>(await userRepository.GetByEmailAsync(request.Email));
+
+        if (storedUser.IsVerified)
+        {
+            throw new InvalidOperationException("Your account already verified.");
+        }
+
+        storedUser.IsVerified = true;
+        userRepository.Update(WhisperMapper.Mapper.Map<UserEntity>(storedUser));
+        await transactionManager.SaveChangesAsync();
     }
 }

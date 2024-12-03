@@ -15,11 +15,6 @@ public record UserRegisterDto
     [MaxLength(15, ErrorMessage = "Username cannot be longer than 15 characters")]
     public required string Username { get; init; }
 
-    [Required(ErrorMessage = "Phone number is required")]
-    [MinLength(11, ErrorMessage = "Phone number cannot be less than 11 characters")]
-    [MaxLength(11, ErrorMessage = "Phone number cannot be longer than 11 characters")]
-    public required string PhoneNumber { get; init; }
-
     [Required(ErrorMessage = "Email is required")]
     [EmailAddress(ErrorMessage = "Invalid email address")]
     public required string Email { get; init; }

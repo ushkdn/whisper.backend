@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using Whisper.Data.Entities.Base;
 
 namespace Whisper.Data.Repositories.CacheRepository;
@@ -19,5 +18,5 @@ public interface ICacheRepository
 
     Task SetSingleAsync<T>(string key, T value, DateTimeOffset? expirationDate = null);
 
-    Task<T> GetSingleAsync<T>(string key);
+    Task<T?> GetSingleAsync<T>(string key);
 }

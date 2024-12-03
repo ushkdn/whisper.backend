@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Whisper.Data.Dtos.User;
+using Whisper.Data.Extensions;
+using Whisper.Data.Utils;
 using Whisper.Services.UserService;
 
 namespace Whisper.User.Controllers;
 
 [Route("api/users")]
 [ApiController]
-public class UserController(IUserService userService, IConfiguration configuration) : Controller
+public class UserController(IUserService userService) : Controller
 {
     #region RegisterSwaggerDoc
 
@@ -43,7 +45,21 @@ public class UserController(IUserService userService, IConfiguration configurati
     [HttpPost("/register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
     {
-        var serviceResponse = await userService.Register(user);
+        var serviceResponse = new ServiceResponse<string>();
+
+        try
+        {
+            await userService.Register(user);
+
+            serviceResponse.StatusCode = 201;
+            serviceResponse.Success = true;
+            serviceResponse.Message = "Your account has been created.";
+        }
+        catch (Exception ex)
+        {
+            ex.ToServiceResponse<string>();
+        }
+
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
     }
 
@@ -73,21 +89,84 @@ public class UserController(IUserService userService, IConfiguration configurati
     [HttpPost("/login")]
     public async Task<IActionResult> ForgotPassword([FromBody] UserForgotPasswordDto user)
     {
-        var serviceResponse = await userService.ForgotPassword(user);
+        var serviceResponse = new ServiceResponse<string>();
+
+        try
+        {
+            await userService.ForgotPassword(user);
+
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Code for password reset sent to your email.";
+        }
+        catch (Exception ex)
+        {
+            serviceResponse = ex.ToServiceResponse<string>();
+        }
+
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
     }
 
     [HttpPost("/reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] UserResetPasswordDto user)
     {
-        var serviceResponse = await userService.ResetPassword(user);
+        var serviceResponse = new ServiceResponse<string>();
+
+        try
+        {
+            await userService.ResetPassword(user);
+
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = 201;
+            serviceResponse.Message = "Password changed.";
+        }
+        catch (Exception ex)
+        {
+            serviceResponse = ex.ToServiceResponse<string>();
+        }
+
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
     }
 
     [HttpPost("/log-in")]
     public async Task<IActionResult> LogIn([FromBody] UserLogInDto user)
     {
-        var serviceResponse = await userService.LogIn(user);
+        var serviceResponse = new ServiceResponse<string>();
+
+        try
+        {
+            await userService.LogIn(user);
+
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = 201;
+            serviceResponse.Message = "You are logged in.";
+        }
+        catch (Exception ex)
+        {
+            serviceResponse = ex.ToServiceResponse<string>();
+        }
+
+        return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
+    }
+
+    [HttpPost("/verify")]
+    public async Task<IActionResult> Verify([FromBody] UserVerifyDto user)
+    {
+        var serviceResponse = new ServiceResponse<string>();
+
+        try
+        {
+            await userService.Verify(user);
+
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = 201;
+            serviceResponse.Message = "Your account has been verified.";
+        }
+        catch (Exception ex)
+        {
+            serviceResponse = ex.ToServiceResponse<string>();
+        }
+
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
     }
 }

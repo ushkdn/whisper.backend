@@ -15,6 +15,8 @@ public partial class WhisperMapper
             configuration = new MapperConfiguration(cfg =>
             {
                 MapUser(cfg);
+                MapLocation(cfg);
+                MapRefreshToken(cfg);
             });
         }
         mapper ??= configuration.CreateMapper();

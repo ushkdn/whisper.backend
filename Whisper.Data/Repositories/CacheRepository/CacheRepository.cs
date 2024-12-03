@@ -80,14 +80,15 @@ public class CacheRepository : ICacheRepository
         await cache.StringSetAsync(key, JsonConvert.SerializeObject(value));
     }
 
-    public async Task<T> GetSingleAsync<T>(string key)
+    public async Task<T?> GetSingleAsync<T>(string key)
     {
         var value = await cache.StringGetAsync(key);
         if (!String.IsNullOrEmpty(value))
         {
             var parsedValue = JsonConvert.DeserializeObject<T>(value)
                 ?? throw new InvalidOperationException($"$Unable to parse data with key:{key} from cache storage");
+            return parsedValue;
         }
-        throw new KeyNotFoundException($"Unable to find entry with key:{key} from cache storage");
+        return JsonConvert.DeserializeObject<T>(value);
     }
 }

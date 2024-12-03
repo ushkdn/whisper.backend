@@ -5,6 +5,8 @@ using Whisper.Core.Registries;
 
 using Whisper.Data;
 using Whisper.Data.Extensions;
+using Whisper.Services.MessageService;
+using Whisper.Services.MessageService.EmailService;
 using Whisper.Services.UserService;
 
 namespace Whisper.User;
@@ -42,11 +44,13 @@ public class Program
         _ = new DotEnvRegistry(builder.Environment)
             .AddDotEnvConfiguration(builder.Configuration);
 
-        new DependencyContainerConfiguration(builder.Services, builder.Configuration)
+        new DataDependencyContainerConfiguration(builder.Services, builder.Configuration)
             .RegisterServices()
             .RegisterDatabase("Postgres")
             .RegisterCacheStorage("Redis")
             .SetNpgsqlContext();
+
+        builder.Services.AddScoped<IMessageService, EmailService>();
 
         builder.Services.AddScoped<IUserService, UserService>();
 

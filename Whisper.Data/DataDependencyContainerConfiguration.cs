@@ -11,9 +11,9 @@ using Whisper.Data.Transactions;
 
 namespace Whisper.Data;
 
-public class DependencyContainerConfiguration(IServiceCollection services, IConfiguration configuration)
+public class DataDependencyContainerConfiguration(IServiceCollection services, IConfiguration configuration)
 {
-    public DependencyContainerConfiguration RegisterServices()
+    public DataDependencyContainerConfiguration RegisterServices()
     {
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUserRepository, UserRepository>();
@@ -23,7 +23,7 @@ public class DependencyContainerConfiguration(IServiceCollection services, IConf
         return this;
     }
 
-    public DependencyContainerConfiguration RegisterDatabase(string dbConnectionStringKey)
+    public DataDependencyContainerConfiguration RegisterDatabase(string dbConnectionStringKey)
     {
         var dbConnectionString = configuration.GetConnectionString(dbConnectionStringKey)
                                ?? throw new ArgumentNullException($"{dbConnectionStringKey} is not configured.");
@@ -37,7 +37,7 @@ public class DependencyContainerConfiguration(IServiceCollection services, IConf
         return this;
     }
 
-    public DependencyContainerConfiguration RegisterCacheStorage(string cacheStorageConnectionStringKey)
+    public DataDependencyContainerConfiguration RegisterCacheStorage(string cacheStorageConnectionStringKey)
     {
         var cacheStorageconnectionString = configuration.GetConnectionString(cacheStorageConnectionStringKey)
             ?? throw new ArgumentNullException($"{cacheStorageConnectionStringKey} is not configured.");
@@ -48,7 +48,7 @@ public class DependencyContainerConfiguration(IServiceCollection services, IConf
         return this;
     }
 
-    public DependencyContainerConfiguration SetNpgsqlContext()
+    public DataDependencyContainerConfiguration SetNpgsqlContext()
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
         return this;
