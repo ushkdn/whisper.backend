@@ -57,7 +57,7 @@ public class UserController(IUserService userService) : Controller
         }
         catch (Exception ex)
         {
-            ex.ToServiceResponse<string>();
+            serviceResponse = ex.ToServiceResponse<string>();
         }
 
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);

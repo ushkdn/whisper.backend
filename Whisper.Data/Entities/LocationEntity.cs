@@ -15,6 +15,5 @@ public record LocationEntity : Entity
     [MaxLength(25, ErrorMessage = "Country must be no more than 5 characters.")]
     public required string Country { get; set; }
 
-    [ForeignKey("user_id")]
     public virtual List<UserEntity>? User { get; set; }
 }

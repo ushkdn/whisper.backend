@@ -60,18 +60,18 @@ public class UserService(IUserRepository userRepository,
     public async Task Register(UserRegisterDto request)
     {
         //remove all not verified accs via quartz every 1h??
-        var storedUser = await userRepository.GetByEmailAsync(request.Email);
+        var storedUser = WhisperMapper.Mapper.Map<UserModel>(await userRepository.GetByEmailAsync(request.Email));
         if (storedUser is not null)
         {
             throw new InvalidOperationException("User already exists.");
         }
+        var userModel = WhisperMapper.Mapper.Map<UserModel>(request);
+        userModel.Password = BCrypt.Net.BCrypt.HashPassword(userModel.Password);
 
-        request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
-
-        await userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(request));
+        await userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(userModel));
         await transactionManager.SaveChangesAsync();
 
-        await messageService.SendMessage(new MessagePayload { UserEmail = request.Email, });
+        await messageService.SendMessage(new MessagePayload { UserEmail = userModel.Email, });
         //mail send here
     }
 

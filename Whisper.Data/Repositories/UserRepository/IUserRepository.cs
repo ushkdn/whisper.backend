@@ -7,7 +7,7 @@ public interface IUserRepository : IRepository<UserEntity>
 {
     Task<UserEntity?> GetByEmailAndPhoneNumberAsync(string email, string phoneNumber);
 
-    Task<UserEntity> GetByEmailAsync(string email);
+    Task<UserEntity?> GetByEmailAsync(string email);
 
     Task<UserEntity> GetByPhoneNumberAsync(string phoneNumber);
 }

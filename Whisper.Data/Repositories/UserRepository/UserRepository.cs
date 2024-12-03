@@ -13,12 +13,9 @@ internal sealed class UserRepository(WhisperDbContext context) : Repository<User
             .FirstOrDefaultAsync();
     }
 
-    public async Task<UserEntity> GetByEmailAsync(string email)
+    public async Task<UserEntity?> GetByEmailAsync(string email)
     {
-        return await DbContext.Users
-            .Where(x => x.Email == email)
-            .FirstOrDefaultAsync()
-            ?? throw new KeyNotFoundException($"Unable to find user by email: {email}");
+        return await DbContext.Users.Where(x => x.Email == email).FirstOrDefaultAsync();
     }
 
     public async Task<UserEntity> GetByPhoneNumberAsync(string phoneNumber)
