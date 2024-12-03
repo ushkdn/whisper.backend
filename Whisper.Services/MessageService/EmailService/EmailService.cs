@@ -41,7 +41,7 @@ public class EmailService(ICacheRepository cacheRepository) : IEmailService
             await smtp.SendAsync(emailMessage);
             smtp.Disconnect(true);
 
-            await cacheRepository.SetStringAsync(CacheTables.SECRET_CODE, )
+            //await cacheRepository.SetStringAsync(CacheTables.SECRET_CODE, )
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 200;

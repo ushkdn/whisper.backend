@@ -69,7 +69,7 @@ public class CacheRepository : ICacheRepository
         await cache.KeyDeleteAsync(key);
     }
 
-    public async Task SetSingleAsync<TTable>(string key, TTable value, DateTimeOffset? expirationDate = null) where TTable : class, IEntity
+    public async Task SetSingleAsync<T>(string key, T value, DateTimeOffset? expirationDate = null)
     {
         if (expirationDate != null)
         {
@@ -80,12 +80,12 @@ public class CacheRepository : ICacheRepository
         await cache.StringSetAsync(key, JsonConvert.SerializeObject(value));
     }
 
-    public async Task<TTable> GetSingleAsync<TTable>(string key) where TTable : class, IEntity
+    public async Task<T> GetSingleAsync<T>(string key)
     {
         var value = await cache.StringGetAsync(key);
         if (!String.IsNullOrEmpty(value))
         {
-            var parsedValue = JsonConvert.DeserializeObject<TTable>(value)
+            var parsedValue = JsonConvert.DeserializeObject<T>(value)
                 ?? throw new InvalidOperationException($"$Unable to parse data with key:{key} from cache storage");
         }
         throw new KeyNotFoundException($"Unable to find entry with key:{key} from cache storage");

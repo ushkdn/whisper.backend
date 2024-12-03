@@ -6,7 +6,7 @@ namespace Whisper.User.Controllers;
 
 [Route("api/users")]
 [ApiController]
-public class UserController(IUserService userService) : Controller
+public class UserController(IUserService userService, IConfiguration configuration) : Controller
 {
     #region RegisterSwaggerDoc
 

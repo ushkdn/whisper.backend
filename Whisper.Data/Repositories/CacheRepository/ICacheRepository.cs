@@ -17,7 +17,7 @@ public interface ICacheRepository
 
     Task RemoveAllAsync(string key);
 
-    Task SetSingleAsync<TTable>(string key, TTable value, DateTimeOffset? expirationDate = null) where TTable : class, IEntity;
+    Task SetSingleAsync<T>(string key, T value, DateTimeOffset? expirationDate = null);
 
-    Task<TTable> GetSingleAsync<TTable>(string key) where TTable : class, IEntity;
+    Task<T> GetSingleAsync<T>(string key);
 }
