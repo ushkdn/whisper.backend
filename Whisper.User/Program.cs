@@ -45,8 +45,8 @@ public class Program
             .AddDotEnvConfiguration(builder.Configuration);
 
         DataDependencyContainerConfiguration.RegisterServices(builder.Services);
-        DataDependencyContainerConfiguration.RegisterDatabase(builder.Configuration, builder.Services, "Postgres");
-        DataDependencyContainerConfiguration.RegisterCacheStorage(builder.Configuration, builder.Services, "Redis");
+        DataDependencyContainerConfiguration.RegisterDatabase(builder.Services, builder.Configuration, "Postgres");
+        DataDependencyContainerConfiguration.RegisterCacheStorage(builder.Services, builder.Configuration, "Redis");
         DataDependencyContainerConfiguration.SetNpgsqlContext();
 
         builder.Services.AddScoped<IMessageService, EmailService>();

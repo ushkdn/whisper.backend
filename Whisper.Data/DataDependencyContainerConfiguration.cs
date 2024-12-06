@@ -22,7 +22,7 @@ public static class DataDependencyContainerConfiguration
         services.AddScoped<ITransactionManager, TransactionManager>();
     }
 
-    public static void RegisterDatabase(IConfiguration configuration, IServiceCollection services, string dbConnectionStringKey)
+    public static void RegisterDatabase(IServiceCollection services, IConfiguration configuration, string dbConnectionStringKey)
     {
         var dbConnectionString = configuration.GetConnectionString(dbConnectionStringKey)
                                ?? throw new ArgumentNullException($"{dbConnectionStringKey} is not configured.");
@@ -34,7 +34,7 @@ public static class DataDependencyContainerConfiguration
                     x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
     }
 
-    public static void RegisterCacheStorage(IConfiguration configuration, IServiceCollection services, string cacheStorageConnectionStringKey)
+    public static void RegisterCacheStorage(IServiceCollection services, IConfiguration configuration, string cacheStorageConnectionStringKey)
     {
         var cacheStorageconnectionString = configuration.GetConnectionString(cacheStorageConnectionStringKey)
             ?? throw new ArgumentNullException($"{cacheStorageConnectionStringKey} is not configured.");
