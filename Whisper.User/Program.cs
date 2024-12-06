@@ -44,11 +44,10 @@ public class Program
         _ = new DotEnvRegistry(builder.Environment)
             .AddDotEnvConfiguration(builder.Configuration);
 
-        new DataDependencyContainerConfiguration(builder.Services, builder.Configuration)
-            .RegisterServices()
-            .RegisterDatabase("Postgres")
-            .RegisterCacheStorage("Redis")
-            .SetNpgsqlContext();
+        DataDependencyContainerConfiguration.RegisterServices(builder.Services);
+        DataDependencyContainerConfiguration.RegisterDatabase(builder.Configuration, builder.Services, "Postgres");
+        DataDependencyContainerConfiguration.RegisterCacheStorage(builder.Configuration, builder.Services, "Redis");
+        DataDependencyContainerConfiguration.SetNpgsqlContext();
 
         builder.Services.AddScoped<IMessageService, EmailService>();
 
