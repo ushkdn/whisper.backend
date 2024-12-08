@@ -9,9 +9,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.Services", "Whisper
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.Core", "Whisper.Core\Whisper.Core.csproj", "{6C1A3A32-9012-4CC6-85CD-E58AAF9DAF54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.User", "Whisper.User\Whisper.User.csproj", "{AD294887-28CE-4211-A6A4-45E0EB24CFC9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.Auth", "Whisper.User\Whisper.Auth.csproj", "{AD294887-28CE-4211-A6A4-45E0EB24CFC9}"
 EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{83847DF3-E8A7-4914-A5CF-5FC76A510CA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.Tests", "..\Whisper.Tests\Whisper.Tests.csproj", "{ED4D3DE8-C06F-4D81-B376-42E35C261B0A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -39,6 +41,10 @@ Global
 		{83847DF3-E8A7-4914-A5CF-5FC76A510CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83847DF3-E8A7-4914-A5CF-5FC76A510CA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83847DF3-E8A7-4914-A5CF-5FC76A510CA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED4D3DE8-C06F-4D81-B376-42E35C261B0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED4D3DE8-C06F-4D81-B376-42E35C261B0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED4D3DE8-C06F-4D81-B376-42E35C261B0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED4D3DE8-C06F-4D81-B376-42E35C261B0A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

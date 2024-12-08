@@ -1,9 +1,9 @@
 ﻿using Whisper.Data.Dtos.User;
 using Whisper.Data.Utils;
 
-namespace Whisper.Services.UserService;
+namespace Whisper.Services.AuthService;
 
-public interface IUserService
+public interface IAuthService
 {
     Task Register(UserRegisterDto request);
 

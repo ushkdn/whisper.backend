@@ -1,11 +1,11 @@
 version: '3.7'
 
 services:
-  whisper.user:
-    image: ${DOCKER_REGISTRY-}whisperuser
+  whisper.auth:
+    image: ${DOCKER_REGISTRY-}whisper.auth
     build:
       context: .
-      dockerfile: Whisper.User/Dockerfile
+      dockerfile: Whisper.Auth/Dockerfile
     env_file:
       - .env
     environment:

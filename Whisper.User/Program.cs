@@ -7,9 +7,9 @@ using Whisper.Data;
 using Whisper.Data.Extensions;
 using Whisper.Services.MessageService;
 using Whisper.Services.MessageService.EmailService;
-using Whisper.Services.UserService;
+using Whisper.Services.AuthService;
 
-namespace Whisper.User;
+namespace Whisper.Auth;
 
 public class Program
 {
@@ -23,9 +23,9 @@ public class Program
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "Whisper.User API",
+                Title = "Whisper.Auth API",
                 Version = "v1",
-                Description = "An API to perform user operations",
+                Description = "An API to perform auth operations",
                 TermsOfService = new Uri("https://example.com/terms"),
                 Contact = new OpenApiContact
                 {
@@ -51,7 +51,7 @@ public class Program
 
         builder.Services.AddScoped<IMessageService, EmailService>();
 
-        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
 
         var app = builder.Build();
 
