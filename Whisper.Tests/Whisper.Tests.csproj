@@ -17,6 +17,11 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Whisper.Auth\Whisper.Auth.csproj" />
+    <ProjectReference Include="..\Whisper.Services\Whisper.Services.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Using Include="Xunit" />
   </ItemGroup>
 

@@ -13,10 +13,10 @@ using Whisper.Services.MessageService;
 
 namespace Whisper.Services.AuthService;
 
-public class AuthService(IUserRepository userRepository,
-    ITransactionManager transactionManager,
-    ICacheRepository cacheRepository,
-    IMessageService messageService) : IAuthService
+public class AuthService(IUserRepository _userRepository,
+    ITransactionManager _transactionManager,
+    ICacheRepository _cacheRepository,
+    IMessageService _messageService) : IAuthService
 {
     private const string EMAIL_REGEX = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
 
@@ -37,11 +37,11 @@ public class AuthService(IUserRepository userRepository,
         UserEntity storedUser = null;
         if (Regex.IsMatch(request.EmailOrPhoneNumber, EMAIL_REGEX))
         {
-            storedUser = await userRepository.GetByEmailAsync(request.EmailOrPhoneNumber);
+            storedUser = await _userRepository.GetByEmailAsync(request.EmailOrPhoneNumber);
         }
         else
         {
-            storedUser = await userRepository.GetByPhoneNumberAsync(request.EmailOrPhoneNumber);
+            storedUser = await _userRepository.GetByPhoneNumberAsync(request.EmailOrPhoneNumber);
         }
 
         if (!BCrypt.Net.BCrypt.Verify(request.Password, storedUser.Password))
@@ -60,7 +60,7 @@ public class AuthService(IUserRepository userRepository,
     public async Task Register(UserRegisterDto request)
     {
         //remove all not verified accs via quartz every 1h??
-        var storedUser = await userRepository.GetByEmailAsync(request.Email);
+        var storedUser = await _userRepository.GetByEmailAsync(request.Email);
         if (storedUser is not null)
         {
             throw new InvalidOperationException("User already exists.");
@@ -68,10 +68,10 @@ public class AuthService(IUserRepository userRepository,
 
         request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
-        await userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(request));
-        await transactionManager.SaveChangesAsync();
+        await _userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(request));
+        await _transactionManager.SaveChangesAsync();
 
-        await messageService.SendMessage(new MessagePayload { UserEmail = request.Email, });
+        await _messageService.SendMessage(new MessagePayload { UserEmail = request.Email, });
         //mail send here
     }
 
@@ -81,7 +81,7 @@ public class AuthService(IUserRepository userRepository,
 
     public async Task Verify(UserVerifyDto request)
     {
-        var cachedSecretCode = await cacheRepository.GetSingleAsync<CacheSecretCode>(
+        var cachedSecretCode = await _cacheRepository.GetSingleAsync<CacheSecretCode>(
             CacheTables.SECRET_CODE + $":{request.Email}"
         );
 
@@ -103,7 +103,7 @@ public class AuthService(IUserRepository userRepository,
         }
 
         storedUser.IsVerified = true;
-        userRepository.Update(WhisperMapper.Mapper.Map<UserEntity>(storedUser));
-        await transactionManager.SaveChangesAsync();
+        _userRepository.Update(WhisperMapper.Mapper.Map<UserEntity>(storedUser));
+        await _transactionManager.SaveChangesAsync();
     }
 }

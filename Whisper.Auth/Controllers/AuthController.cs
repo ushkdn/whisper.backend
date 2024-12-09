@@ -54,7 +54,7 @@ public class AuthController(IAuthService authService) : Controller
             serviceResponse.StatusCode = 201;
             serviceResponse.Success = true;
             serviceResponse.Message = "Your account has been created.";
-        }
+        } 
         catch (Exception ex)
         {
             ex.ToServiceResponse<string>();

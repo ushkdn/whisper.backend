@@ -11,9 +11,9 @@ using Whisper.Data.Utils;
 
 namespace Whisper.Services.TokenService;
 
-public class TokenService(IConfiguration configuration) : ITokenService
+public class TokenService(IConfiguration _configuration) : ITokenService
 {
-    private readonly string tokenHashKey = configuration.GetStringOrThrow("Token:HashKey");
+    private readonly string tokenHashKey = _configuration.GetStringOrThrow("Token:HashKey");
 
     public async Task RefreshToken()
     {
