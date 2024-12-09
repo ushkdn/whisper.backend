@@ -1,13 +1,11 @@
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-
 using Whisper.Core.Registries;
-
 using Whisper.Data;
 using Whisper.Data.Extensions;
+using Whisper.Services.AuthService;
 using Whisper.Services.MessageService;
 using Whisper.Services.MessageService.EmailService;
-using Whisper.Services.AuthService;
 
 namespace Whisper.Auth;
 
@@ -61,7 +59,6 @@ public class Program
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                c.RoutePrefix = string.Empty;
             });
 
             app.ApplyMigrations();

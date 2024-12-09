@@ -11,9 +11,9 @@ using Whisper.Data.Utils;
 
 namespace Whisper.Services.TokenService;
 
-public class TokenService(IConfiguration _configuration) : ITokenService
+public class TokenService(IConfiguration configuration) : ITokenService
 {
-    private readonly string tokenHashKey = _configuration.GetStringOrThrow("Token:HashKey");
+    private readonly string tokenHashKey = configuration.GetStringOrThrow("Token:HashKey");
 
     public async Task RefreshToken()
     {
@@ -35,7 +35,7 @@ public class TokenService(IConfiguration _configuration) : ITokenService
         List<Claim> claims = new List<Claim>()
         {
             new Claim("Id", $"{userModel.Id}"),
-            new Claim(ClaimTypes.Email, userModel.Email),
+            new Claim(ClaimTypes.Email, userModel?.Email),
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenHashKey));

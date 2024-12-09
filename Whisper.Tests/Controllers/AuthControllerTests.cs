@@ -1,6 +1,5 @@
 ﻿using FakeItEasy;
 using FluentAssertions;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Whisper.Data.Dtos.User;
 using Whisper.Services.AuthService;
@@ -10,41 +9,81 @@ namespace Whisper.Tests.Controllers;
 
 public class AuthControllerTests
 {
-    private readonly IAuthService _authService;
-    private readonly AuthController _authController;
+    private readonly IAuthService authService;
+    private readonly AuthController authController;
 
     public AuthControllerTests()
     {
-        _authService = A.Fake<IAuthService>();
-        _authController = new AuthController(_authService);
+        authService = A.Fake<IAuthService>();
+        authController = new AuthController(authService);
     }
 
+    #region Register(Completed)
+
     [Fact]
-    public async Task AuthController_Register_ReturnOk()
+    public async Task Register_ReturnOk_UserRegistered()
     {
         //Arrange
         var user = A.Fake<UserRegisterDto>();
-        A.CallTo(() => _authService.Register(user)).Returns(Task.CompletedTask);
+        A.CallTo(() => authService.Register(user)).Returns(Task.CompletedTask);
 
         //Act
-        var result = await _authController.Register(user);
+        var result = await authController.Register(user);
+
+        //Assert
+        ObjectResult? statusCodeResult = result as ObjectResult;
+
+        statusCodeResult.Should().NotBeNull().And.BeOfType<ObjectResult>();
+        statusCodeResult?.Value.Should().NotBeNull().And.Be("Your account has been created.");
+        statusCodeResult?.StatusCode.Should().NotBeNull().And.Be(201);
+    }
+
+    [Fact]
+    public async Task Register_ReturnBadRequest_UserExists()
+    {
+        //Arrange
+        var user = A.Fake<UserRegisterDto>();
+        A.CallTo(() => authService.Register(user))
+            .ThrowsAsync(new InvalidOperationException(("User already exists.")));
+
+        //Act
+        var result = await authController.Register(user);
+
+        //Assert
+        ObjectResult? statusCodeResult = result as ObjectResult;
+
+        statusCodeResult.Should().NotBeNull().And.BeOfType<ObjectResult>();
+        statusCodeResult?.Value.Should().NotBeNull().And.Be("User already exists.");
+        statusCodeResult?.StatusCode.Should().Be(400);
+    }
+
+    #endregion Register(Completed)
+
+    [Fact]
+    public async Task ResetPassword_ReturnOk()
+    {
+        //Arrange
+        var user = A.Fake<UserResetPasswordDto>();
+        A.CallTo(() => authService.ResetPassword(user)).Returns(Task.CompletedTask);
+
+        //Act
+        var result = await authController.ResetPassword(user);
 
         //Assert
         var statusCodeResult = result as ObjectResult;
-        statusCodeResult.Should().BeOfType<Task<IActionResult>>();
         statusCodeResult?.Value.Should().NotBeNull();
         statusCodeResult?.StatusCode.Should().Be(201);
     }
 
     [Fact]
-    public async Task AuthController_ResetPassword_ReturnOk()
+    public async Task ResetPassword_ReturnBadRequest()
     {
         //Arrange
         var user = A.Fake<UserResetPasswordDto>();
-        A.CallTo(() => _authService.ResetPassword(user)).Returns(Task.CompletedTask);
+        A.CallTo(() => authService.ResetPassword(user)).Returns(Task.CompletedTask);
 
         //Act
-        var result = await _authController.ResetPassword(user);
+        var result = await authController.ResetPassword(user);
 
         //Assert
         var statusCodeResult = result as ObjectResult;

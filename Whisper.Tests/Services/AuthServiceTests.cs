@@ -1,6 +1,4 @@
 ﻿using FakeItEasy;
-using FluentAssertions;
-using StackExchange.Redis;
 using Whisper.Data.Dtos.User;
 using Whisper.Data.Repositories.CacheRepository;
 using Whisper.Data.Repositories.UserRepository;
@@ -12,23 +10,23 @@ namespace Whisper.Tests.Services;
 
 public class AuthServiceTests
 {
-    private readonly IUserRepository _userRepository;
-    private readonly ITransactionManager _transactionManager;
-    private readonly ICacheRepository _cacheRepository;
-    private readonly IMessageService _messageService;
-    private readonly IAuthService _authService;
+    private readonly IUserRepository userRepository;
+    private readonly ITransactionManager transactionManager;
+    private readonly ICacheRepository cacheRepository;
+    private readonly IMessageService messageService;
+    private readonly IAuthService authService;
 
     public AuthServiceTests()
     {
-        _userRepository = A.Fake<IUserRepository>();
-        _transactionManager = A.Fake<ITransactionManager>();
-        _cacheRepository = A.Fake<ICacheRepository>();
-        _messageService = A.Fake<IMessageService>();
+        userRepository = A.Fake<IUserRepository>();
+        transactionManager = A.Fake<ITransactionManager>();
+        cacheRepository = A.Fake<ICacheRepository>();
+        messageService = A.Fake<IMessageService>();
 
-        _authService = new AuthService(_userRepository,
-            _transactionManager,
-            _cacheRepository,
-            _messageService
+        authService = new AuthService(userRepository,
+            transactionManager,
+            cacheRepository,
+            messageService
         );
     }
 

@@ -12,13 +12,13 @@ using Whisper.Data.Utils;
 
 namespace Whisper.Services.MessageService.EmailService;
 
-public class EmailService(ICacheRepository _cacheRepository, IConfiguration _configuration) : IEmailService
+public class EmailService(ICacheRepository cacheRepository, IConfiguration configuration) : IEmailService
 {
     private const int SECRET_CODE_EXPIRE_MINUTES = 5;
-    private readonly int whisperMessagingEmailPort = int.Parse(_configuration.GetStringOrThrow("Messaging:Email:Port"));
-    private readonly string whisperMessagingEmailEmail = _configuration.GetStringOrThrow("Messaging:Email:Email");
-    private readonly string whisperMessagingEmailHost = _configuration.GetStringOrThrow("Messaging:Email:Host");
-    private readonly string whisperMessagingEmailPassword = _configuration.GetStringOrThrow("Messaging:Email:Password");
+    private readonly int whisperMessagingEmailPort = int.Parse(configuration.GetStringOrThrow("Messaging:Email:Port"));
+    private readonly string whisperMessagingEmailEmail = configuration.GetStringOrThrow("Messaging:Email:Email");
+    private readonly string whisperMessagingEmailHost = configuration.GetStringOrThrow("Messaging:Email:Host");
+    private readonly string whisperMessagingEmailPassword = configuration.GetStringOrThrow("Messaging:Email:Password");
 
     public async Task SendMessage(MessagePayload messagePayload)
     {
@@ -48,7 +48,7 @@ public class EmailService(ICacheRepository _cacheRepository, IConfiguration _con
         await smtp.SendAsync(emailMessage);
         smtp.Disconnect(true);
 
-        await _cacheRepository.SetSingleAsync(
+        await cacheRepository.SetSingleAsync(
             CacheTables.SECRET_CODE + $":{messagePayload.UserEmail}",
             new CacheSecretCode
             {

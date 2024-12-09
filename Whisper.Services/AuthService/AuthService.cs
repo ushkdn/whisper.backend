@@ -13,10 +13,10 @@ using Whisper.Services.MessageService;
 
 namespace Whisper.Services.AuthService;
 
-public class AuthService(IUserRepository _userRepository,
-    ITransactionManager _transactionManager,
-    ICacheRepository _cacheRepository,
-    IMessageService _messageService) : IAuthService
+public class AuthService(IUserRepository userRepository,
+    ITransactionManager transactionManager,
+    ICacheRepository cacheRepository,
+    IMessageService messageService) : IAuthService
 {
     private const string EMAIL_REGEX = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
 
@@ -34,17 +34,10 @@ public class AuthService(IUserRepository _userRepository,
 
     public async Task LogIn(UserLogInDto request)
     {
-        UserEntity storedUser = null;
-        if (Regex.IsMatch(request.EmailOrPhoneNumber, EMAIL_REGEX))
-        {
-            storedUser = await _userRepository.GetByEmailAsync(request.EmailOrPhoneNumber);
-        }
-        else
-        {
-            storedUser = await _userRepository.GetByPhoneNumberAsync(request.EmailOrPhoneNumber);
-        }
+        var storedUser = await userRepository.GetByEmailAsync(request.Email)
+            ?? throw new ArgumentException("Wrong email or password.");
 
-        if (!BCrypt.Net.BCrypt.Verify(request.Password, storedUser.Password))
+        if (!BCrypt.Net.BCrypt.Verify(request.Password, storedUser?.Password))
         {
             throw new ArgumentException("Wrong email/phonenumber or password.");
         }
@@ -60,7 +53,7 @@ public class AuthService(IUserRepository _userRepository,
     public async Task Register(UserRegisterDto request)
     {
         //remove all not verified accs via quartz every 1h??
-        var storedUser = await _userRepository.GetByEmailAsync(request.Email);
+        var storedUser = await userRepository.GetByEmailAsync(request.Email);
         if (storedUser is not null)
         {
             throw new InvalidOperationException("User already exists.");
@@ -68,10 +61,10 @@ public class AuthService(IUserRepository _userRepository,
 
         request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
 
-        await _userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(request));
-        await _transactionManager.SaveChangesAsync();
+        await userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(request));
+        await transactionManager.SaveChangesAsync();
 
-        await _messageService.SendMessage(new MessagePayload { UserEmail = request.Email, });
+        await messageService.SendMessage(new MessagePayload { UserEmail = request.Email, });
         //mail send here
     }
 
@@ -81,7 +74,7 @@ public class AuthService(IUserRepository _userRepository,
 
     public async Task Verify(UserVerifyDto request)
     {
-        var cachedSecretCode = await _cacheRepository.GetSingleAsync<CacheSecretCode>(
+        var cachedSecretCode = await cacheRepository.GetSingleAsync<CacheSecretCode>(
             CacheTables.SECRET_CODE + $":{request.Email}"
         );
 
@@ -103,7 +96,7 @@ public class AuthService(IUserRepository _userRepository,
         }
 
         storedUser.IsVerified = true;
-        _userRepository.Update(WhisperMapper.Mapper.Map<UserEntity>(storedUser));
-        await _transactionManager.SaveChangesAsync();
+        userRepository.Update(WhisperMapper.Mapper.Map<UserEntity>(storedUser));
+        await transactionManager.SaveChangesAsync();
     }
 }

@@ -4,8 +4,8 @@ namespace Whisper.Data.Dtos.User;
 
 public record UserLogInDto
 {
-    [Required(ErrorMessage = "Email or phone number is required")]
-    public required string EmailOrPhoneNumber { get; init; }
+    [Required(ErrorMessage = "Email is required")]
+    public required string Email { get; init; }
 
     [Required(ErrorMessage = "Password is required")]
     [MinLength(5, ErrorMessage = "Password cannot be less than 5 characters")]

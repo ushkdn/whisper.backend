@@ -1,5 +1,4 @@
 ﻿using Whisper.Data.Dtos.User;
-using Whisper.Data.Utils;
 
 namespace Whisper.Services.AuthService;
 
