@@ -18,8 +18,6 @@ public class AuthControllerTests
         authController = new AuthController(authService);
     }
 
-    #region Register(Completed)
-
     [Fact]
     public async Task Register_ReturnOk()
     {
@@ -39,11 +37,11 @@ public class AuthControllerTests
     }
 
     [Theory]
-    [InlineData(typeof(KeyNotFoundException), 404)]
     [InlineData(typeof(InvalidOperationException), 400)]
     [InlineData(typeof(ArgumentNullException), 400)]
     [InlineData(typeof(ArgumentException), 400)]
     [InlineData(typeof(HttpRequestException), 400)]
+    [InlineData(typeof(KeyNotFoundException), 404)]
     [InlineData(typeof(Exception), 500)]
     public async Task Register_ReturnBadRequest(Type exceptionType, int expectedStatusCode)
     {
@@ -65,8 +63,6 @@ public class AuthControllerTests
         statusCodeResult?.StatusCode.Should().Be(expectedStatusCode);
     }
 
-    #endregion Register(Completed)
-
     [Fact]
     public async Task ResetPassword_ReturnOk()
     {
@@ -83,19 +79,27 @@ public class AuthControllerTests
         statusCodeResult?.StatusCode.Should().Be(201);
     }
 
-    [Fact]
-    public async Task ResetPassword_ReturnBadRequest()
+    [Theory]
+    [InlineData(typeof(InvalidOperationException), 400)]
+    [InlineData(typeof(ArgumentNullException), 400)]
+    [InlineData(typeof(ArgumentException), 400)]
+    [InlineData(typeof(HttpRequestException), 400)]
+    [InlineData(typeof(KeyNotFoundException), 404)]
+    [InlineData(typeof(Exception), 500)]
+    public async Task ResetPassword_ReturnBadRequest(Type exceptionType, int expectedStatusCode)
     {
         //Arrange
         var user = A.Fake<UserResetPasswordDto>();
-        A.CallTo(() => authService.ResetPassword(user)).Returns(Task.CompletedTask);
+        var exception = (Exception?)Activator.CreateInstance(exceptionType);
+        A.CallTo(() => authService.ResetPassword(user)).ThrowsAsync(exception);
 
         //Act
         var result = await authController.ResetPassword(user);
 
         //Assert
         var statusCodeResult = result as ObjectResult;
+        statusCodeResult.Should().NotBeNull().And.BeOfType<ObjectResult>();
         statusCodeResult?.Value.Should().NotBeNull();
-        statusCodeResult?.StatusCode.Should().Be(201);
+        statusCodeResult?.StatusCode.Should().Be(expectedStatusCode);
     }
 }

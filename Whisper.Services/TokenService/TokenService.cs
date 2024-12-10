@@ -5,9 +5,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Whisper.Core.Helpers;
-using Whisper.Data.Extensions;
 using Whisper.Data.Models;
-using Whisper.Data.Utils;
 
 namespace Whisper.Services.TokenService;
 
