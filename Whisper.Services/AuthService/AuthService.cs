@@ -13,7 +13,8 @@ using Whisper.Services.MessageService;
 
 namespace Whisper.Services.AuthService;
 
-public class AuthService(IUserRepository userRepository,
+public class AuthService(
+    IUserRepository userRepository,
     ITransactionManager transactionManager,
     ICacheRepository cacheRepository,
     IMessageService messageService) : IAuthService

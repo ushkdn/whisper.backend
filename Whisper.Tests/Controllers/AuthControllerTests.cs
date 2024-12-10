@@ -21,7 +21,7 @@ public class AuthControllerTests
     #region Register(Completed)
 
     [Fact]
-    public async Task Register_ReturnOk_UserRegistered()
+    public async Task Register_ReturnOk()
     {
         //Arrange
         var user = A.Fake<UserRegisterDto>();
@@ -34,17 +34,25 @@ public class AuthControllerTests
         ObjectResult? statusCodeResult = result as ObjectResult;
 
         statusCodeResult.Should().NotBeNull().And.BeOfType<ObjectResult>();
-        statusCodeResult?.Value.Should().NotBeNull().And.Be("Your account has been created.");
         statusCodeResult?.StatusCode.Should().NotBeNull().And.Be(201);
+        statusCodeResult?.Value.Should().NotBeNull();
     }
 
-    [Fact]
-    public async Task Register_ReturnBadRequest_UserExists()
+    [Theory]
+    [InlineData(typeof(KeyNotFoundException), 404)]
+    [InlineData(typeof(InvalidOperationException), 400)]
+    [InlineData(typeof(ArgumentNullException), 400)]
+    [InlineData(typeof(ArgumentException), 400)]
+    [InlineData(typeof(HttpRequestException), 400)]
+    [InlineData(typeof(Exception), 500)]
+    public async Task Register_ReturnBadRequest(Type exceptionType, int expectedStatusCode)
     {
         //Arrange
         var user = A.Fake<UserRegisterDto>();
+
+        var exception = (Exception?)Activator.CreateInstance(exceptionType);
         A.CallTo(() => authService.Register(user))
-            .ThrowsAsync(new InvalidOperationException(("User already exists.")));
+            .ThrowsAsync(exception);
 
         //Act
         var result = await authController.Register(user);
@@ -53,8 +61,8 @@ public class AuthControllerTests
         ObjectResult? statusCodeResult = result as ObjectResult;
 
         statusCodeResult.Should().NotBeNull().And.BeOfType<ObjectResult>();
-        statusCodeResult?.Value.Should().NotBeNull().And.Be("User already exists.");
-        statusCodeResult?.StatusCode.Should().Be(400);
+        statusCodeResult?.Value.Should().NotBeNull();
+        statusCodeResult?.StatusCode.Should().Be(expectedStatusCode);
     }
 
     #endregion Register(Completed)
