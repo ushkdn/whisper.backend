@@ -8,7 +8,7 @@ namespace Whisper.User.Controllers;
 
 [Route("api/auth")]
 [ApiController]
-public class AuthController(IAuthService authService) : Controller
+public class AuthController(IAuthService authService) : ControllerBase
 {
     #region RegisterSwaggerDoc
 
@@ -42,7 +42,7 @@ public class AuthController(IAuthService authService) : Controller
 
     #endregion RegisterSwaggerDoc
 
-    [HttpPost("/register")]
+    [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
@@ -86,7 +86,7 @@ public class AuthController(IAuthService authService) : Controller
 
     #endregion LogInSwaggerDoc
 
-    [HttpPost("/login")]
+    [HttpPost("login")]
     public async Task<IActionResult> ForgotPassword([FromBody] UserForgotPasswordDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
@@ -107,7 +107,7 @@ public class AuthController(IAuthService authService) : Controller
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
     }
 
-    [HttpPost("/reset-password")]
+    [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] UserResetPasswordDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
@@ -128,7 +128,7 @@ public class AuthController(IAuthService authService) : Controller
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
     }
 
-    [HttpPost("/log-in")]
+    [HttpPost("log-in")]
     public async Task<IActionResult> LogIn([FromBody] UserLogInDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
@@ -149,7 +149,7 @@ public class AuthController(IAuthService authService) : Controller
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
     }
 
-    [HttpPost("/verify")]
+    [HttpPost("verify")]
     public async Task<IActionResult> Verify([FromBody] UserVerifyDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
