@@ -4,7 +4,7 @@ namespace Whisper.Data.Models;
 
 public record RefreshTokenModel : ModelBase
 {
-    public string? Token { get; set; }
-    public DateTime? ExpiryDate { get; set; }
+    public required string Token { get; set; }
+    public required DateTime ExpireDate { get; set; }
     public virtual UserModel? User { get; set; }
 }

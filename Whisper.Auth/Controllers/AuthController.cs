@@ -1,14 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 using Whisper.Data.Dtos.User;
 using Whisper.Data.Extensions;
+using Whisper.Data.Mapping;
+using Whisper.Data.Models;
 using Whisper.Data.Utils;
-using Whisper.Services.UserService;
+using Whisper.Services.AuthService;
+using Whisper.Services.TokenService;
 
 namespace Whisper.User.Controllers;
 
-[Route("api/users")]
+[Route("api/auth")]
 [ApiController]
-public class UserController(IUserService userService) : Controller
+public class AuthController(IAuthService authService, ITokenService tokenService) : ControllerBase
 {
     #region RegisterSwaggerDoc
 
@@ -42,14 +46,15 @@ public class UserController(IUserService userService) : Controller
 
     #endregion RegisterSwaggerDoc
 
-    [HttpPost("/register")]
+    [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
 
         try
         {
-            await userService.Register(user);
+            var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
+            await authService.Register(userModel);
 
             serviceResponse.StatusCode = 201;
             serviceResponse.Success = true;
@@ -86,14 +91,15 @@ public class UserController(IUserService userService) : Controller
 
     #endregion LogInSwaggerDoc
 
-    [HttpPost("/login")]
+    [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword([FromBody] UserForgotPasswordDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
 
         try
         {
-            await userService.ForgotPassword(user);
+            var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
+            await authService.ForgotPassword(userModel);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 200;
@@ -107,14 +113,15 @@ public class UserController(IUserService userService) : Controller
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
     }
 
-    [HttpPost("/reset-password")]
+    [HttpPost("reset-password")]
     public async Task<IActionResult> ResetPassword([FromBody] UserResetPasswordDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
 
         try
         {
-            await userService.ResetPassword(user);
+            var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
+            await authService.ResetPassword(userModel);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;
@@ -128,14 +135,15 @@ public class UserController(IUserService userService) : Controller
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
     }
 
-    [HttpPost("/log-in")]
+    [HttpPost("log-in")]
     public async Task<IActionResult> LogIn([FromBody] UserLogInDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
 
         try
         {
-            await userService.LogIn(user);
+            var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
+            await authService.LogIn(userModel);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;
@@ -149,24 +157,48 @@ public class UserController(IUserService userService) : Controller
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
     }
 
-    [HttpPost("/verify")]
+    [HttpPost("verify")]
     public async Task<IActionResult> Verify([FromBody] UserVerifyDto user)
     {
-        var serviceResponse = new ServiceResponse<string>();
+        var serviceResponse = new ServiceResponse<TokensModel>();
 
         try
         {
-            await userService.Verify(user);
+            var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
+            var tokens = await authService.Verify(userModel);
 
             serviceResponse.Success = true;
-            serviceResponse.StatusCode = 201;
+            serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your account has been verified.";
+            serviceResponse.Data = tokens;
         }
         catch (Exception ex)
         {
-            serviceResponse = ex.ToServiceResponse<string>();
+            serviceResponse = ex.ToServiceResponse<TokensModel>();
         }
 
-        return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
+        return StatusCode(serviceResponse.StatusCode, serviceResponse.Data);
+    }
+
+    [HttpPost("refresh-tokens")]
+    public async Task<IActionResult> RefreshTokens()
+    {
+        var serviceResponse = new ServiceResponse<TokensModel>();
+
+        try
+        {
+            var tokens = await tokenService.RefreshTokens();
+
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your account has been verified.";
+            serviceResponse.Data = tokens;
+        }
+        catch (Exception ex)
+        {
+            serviceResponse = ex.ToServiceResponse<TokensModel>();
+        }
+
+        return StatusCode(serviceResponse.StatusCode, serviceResponse.Data);
     }
 }

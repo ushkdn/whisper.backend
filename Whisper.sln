@@ -9,9 +9,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.Services", "Whisper
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.Core", "Whisper.Core\Whisper.Core.csproj", "{6C1A3A32-9012-4CC6-85CD-E58AAF9DAF54}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.User", "Whisper.User\Whisper.User.csproj", "{AD294887-28CE-4211-A6A4-45E0EB24CFC9}"
-EndProject
 Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{83847DF3-E8A7-4914-A5CF-5FC76A510CA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.Auth", "Whisper.Auth\Whisper.Auth.csproj", "{9E68B808-AD0E-44A2-B640-09D7EE017039}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Whisper.Tests", "Whisper.Tests\Whisper.Tests.csproj", "{A1FD54E1-B8BE-4154-BEE1-59FAE726925F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{A9689C72-6BDF-4473-8626-EF532DDE1E62}"
+	ProjectSection(SolutionItems) = preProject
+		.env = .env
+		.env.example = .env.example
+		.gitignore = .gitignore
+		migrations.md = migrations.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,14 +41,18 @@ Global
 		{6C1A3A32-9012-4CC6-85CD-E58AAF9DAF54}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6C1A3A32-9012-4CC6-85CD-E58AAF9DAF54}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6C1A3A32-9012-4CC6-85CD-E58AAF9DAF54}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AD294887-28CE-4211-A6A4-45E0EB24CFC9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AD294887-28CE-4211-A6A4-45E0EB24CFC9}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AD294887-28CE-4211-A6A4-45E0EB24CFC9}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AD294887-28CE-4211-A6A4-45E0EB24CFC9}.Release|Any CPU.Build.0 = Release|Any CPU
 		{83847DF3-E8A7-4914-A5CF-5FC76A510CA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{83847DF3-E8A7-4914-A5CF-5FC76A510CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83847DF3-E8A7-4914-A5CF-5FC76A510CA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83847DF3-E8A7-4914-A5CF-5FC76A510CA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9E68B808-AD0E-44A2-B640-09D7EE017039}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9E68B808-AD0E-44A2-B640-09D7EE017039}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9E68B808-AD0E-44A2-B640-09D7EE017039}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9E68B808-AD0E-44A2-B640-09D7EE017039}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1FD54E1-B8BE-4154-BEE1-59FAE726925F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1FD54E1-B8BE-4154-BEE1-59FAE726925F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1FD54E1-B8BE-4154-BEE1-59FAE726925F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1FD54E1-B8BE-4154-BEE1-59FAE726925F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

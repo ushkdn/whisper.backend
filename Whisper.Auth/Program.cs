@@ -1,15 +1,14 @@
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-
 using Whisper.Core.Registries;
-
 using Whisper.Data;
 using Whisper.Data.Extensions;
+using Whisper.Services.AuthService;
 using Whisper.Services.MessageService;
 using Whisper.Services.MessageService.EmailService;
-using Whisper.Services.UserService;
+using Whisper.Services.TokenService;
 
-namespace Whisper.User;
+namespace Whisper.Auth;
 
 public class Program
 {
@@ -23,9 +22,9 @@ public class Program
         {
             c.SwaggerDoc("v1", new OpenApiInfo
             {
-                Title = "Whisper.User API",
+                Title = "Whisper.Auth API",
                 Version = "v1",
-                Description = "An API to perform user operations",
+                Description = "An API to perform auth operations",
                 TermsOfService = new Uri("https://example.com/terms"),
                 Contact = new OpenApiContact
                 {
@@ -50,8 +49,9 @@ public class Program
         DataDependencyContainerConfiguration.SetNpgsqlContext();
 
         builder.Services.AddScoped<IMessageService, EmailService>();
-
-        builder.Services.AddScoped<IUserService, UserService>();
+        builder.Services.AddScoped<ITokenService, TokenService>();
+        builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddHttpContextAccessor();
 
         var app = builder.Build();
 
@@ -61,7 +61,6 @@ public class Program
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
-                c.RoutePrefix = string.Empty;
             });
 
             app.ApplyMigrations();

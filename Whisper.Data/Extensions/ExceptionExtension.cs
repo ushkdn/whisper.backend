@@ -17,6 +17,7 @@ public static class ExceptionExtension
                 break;
 
             case InvalidOperationException _:
+            //TODO: change logic(ex.message = Value cannot be null + ur custom message)
             case ArgumentNullException _:
             case ArgumentException _:
             case HttpRequestException _:

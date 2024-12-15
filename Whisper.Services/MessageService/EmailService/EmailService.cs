@@ -1,7 +1,6 @@
 ﻿using MailKit.Net.Smtp;
 using MailKit.Security;
 using Microsoft.Extensions.Configuration;
-
 using MimeKit;
 using MimeKit.Text;
 using Whisper.Core.Helpers;
@@ -22,7 +21,6 @@ public class EmailService(ICacheRepository cacheRepository, IConfiguration confi
 
     public async Task SendMessage(MessagePayload messagePayload)
     {
-        //fetch from configuration
         var secretCode = GenerateSecurityCode();
         var emailMessage = new MimeMessage();
         emailMessage.From.Add(MailboxAddress.Parse(whisperMessagingEmailEmail));
