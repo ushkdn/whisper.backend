@@ -4,10 +4,12 @@ using Whisper.Data.Entities;
 using Whisper.Data.Mapping;
 using Whisper.Data.Models;
 using Whisper.Data.Repositories.CacheRepository;
+using Whisper.Data.Repositories.RefreshTokenRepository;
 using Whisper.Data.Repositories.UserRepository;
 using Whisper.Data.Transactions;
 using Whisper.Data.Utils;
 using Whisper.Services.MessageService;
+using Whisper.Services.TokenService;
 
 namespace Whisper.Services.AuthService;
 
@@ -15,15 +17,18 @@ public class AuthService(
     IUserRepository userRepository,
     ITransactionManager transactionManager,
     ICacheRepository cacheRepository,
-    IMessageService messageService) : IAuthService
+    IMessageService messageService,
+    ITokenService tokenService,
+    IRefreshTokenRepository refreshTokenRepository
+    ) : IAuthService
 {
     public async Task ForgotPassword(UserModel user)
     {
     }
 
-    public async Task LogIn(UserModel user)
+    public async Task<TokensModel> LogIn(UserModel user)
     {
-        var storedUser = await userRepository.GetByEmailAsync(user.Email)
+        var storedUser = WhisperMapper.Mapper.Map<UserModel>(await userRepository.GetByEmailAsync(user.Email))
             ?? throw new ArgumentException("Wrong email or password.");
 
         if (!BCrypt.Net.BCrypt.Verify(user.Password, storedUser?.Password))
@@ -36,13 +41,21 @@ public class AuthService(
             throw new InvalidOperationException("Your account is not verified.");
         }
 
-        //token zone should be here
+        var refreshToken = tokenService.CreateRefreshToken();
+        var accessToken = tokenService.CreateAccessToken(storedUser);
+        tokenService.SetRefreshToken(refreshToken);
+
+        return new TokensModel
+        {
+            RefreshToken = refreshToken.Token,
+            AccessToken = accessToken
+        };
     }
 
     public async Task Register(UserModel user)
     {
         //remove all not verified accs via quartz every 1h??
-        var storedUser = await userRepository.GetByEmailAsync(user.Email);
+        var storedUser = WhisperMapper.Mapper.Map<UserModel>(await userRepository.GetByEmailAsync(user.Email));
         if (storedUser is not null)
         {
             throw new InvalidOperationException("User already exists.");
@@ -54,14 +67,13 @@ public class AuthService(
         await transactionManager.SaveChangesAsync();
 
         await messageService.SendMessage(new MessagePayload { UserEmail = user.Email, });
-        //mail send here
     }
 
     public async Task ResetPassword(UserModel user)
     {
     }
 
-    public async Task Verify(UserModel user)
+    public async Task<TokensModel> Verify(UserModel user)
     {
         var cachedSecretCode = await cacheRepository.GetSingleAsync<CacheSecretCode>(
             CacheTables.SECRET_CODE + $":{user.Email}"
@@ -84,8 +96,20 @@ public class AuthService(
             throw new InvalidOperationException("Your account already verified.");
         }
 
+        var refreshToken = tokenService.CreateRefreshToken();
+        var accessToken = tokenService.CreateAccessToken(storedUser);
+        tokenService.SetRefreshToken(refreshToken);
+
         storedUser.IsVerified = true;
+        storedUser.RefreshToken = refreshToken;
+
         userRepository.Update(WhisperMapper.Mapper.Map<UserEntity>(storedUser));
         await transactionManager.SaveChangesAsync();
+
+        return new TokensModel
+        {
+            RefreshToken = refreshToken.Token,
+            AccessToken = accessToken
+        };
     }
 }

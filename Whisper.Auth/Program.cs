@@ -6,6 +6,7 @@ using Whisper.Data.Extensions;
 using Whisper.Services.AuthService;
 using Whisper.Services.MessageService;
 using Whisper.Services.MessageService.EmailService;
+using Whisper.Services.TokenService;
 
 namespace Whisper.Auth;
 
@@ -48,8 +49,9 @@ public class Program
         DataDependencyContainerConfiguration.SetNpgsqlContext();
 
         builder.Services.AddScoped<IMessageService, EmailService>();
-
+        builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
+        builder.Services.AddHttpContextAccessor();
 
         var app = builder.Build();
 

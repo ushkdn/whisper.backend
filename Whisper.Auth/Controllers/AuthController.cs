@@ -1,16 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel;
 using Whisper.Data.Dtos.User;
 using Whisper.Data.Extensions;
 using Whisper.Data.Mapping;
 using Whisper.Data.Models;
 using Whisper.Data.Utils;
 using Whisper.Services.AuthService;
+using Whisper.Services.TokenService;
 
 namespace Whisper.User.Controllers;
 
 [Route("api/auth")]
 [ApiController]
-public class AuthController(IAuthService authService) : ControllerBase
+public class AuthController(IAuthService authService, ITokenService tokenService) : ControllerBase
 {
     #region RegisterSwaggerDoc
 
@@ -51,7 +53,8 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         try
         {
-            await authService.Register(WhisperMapper.Mapper.Map<UserModel>(user));
+            var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
+            await authService.Register(userModel);
 
             serviceResponse.StatusCode = 201;
             serviceResponse.Success = true;
@@ -88,14 +91,15 @@ public class AuthController(IAuthService authService) : ControllerBase
 
     #endregion LogInSwaggerDoc
 
-    [HttpPost("login")]
+    [HttpPost("forgot-password")]
     public async Task<IActionResult> ForgotPassword([FromBody] UserForgotPasswordDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
 
         try
         {
-            await authService.ForgotPassword(WhisperMapper.Mapper.Map<UserModel>(user));
+            var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
+            await authService.ForgotPassword(userModel);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 200;
@@ -116,7 +120,8 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         try
         {
-            await authService.ResetPassword(WhisperMapper.Mapper.Map<UserModel>(user));
+            var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
+            await authService.ResetPassword(userModel);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;
@@ -137,7 +142,8 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         try
         {
-            await authService.LogIn(WhisperMapper.Mapper.Map<UserModel>(user));
+            var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
+            await authService.LogIn(userModel);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;
@@ -154,21 +160,45 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("verify")]
     public async Task<IActionResult> Verify([FromBody] UserVerifyDto user)
     {
-        var serviceResponse = new ServiceResponse<string>();
+        var serviceResponse = new ServiceResponse<TokensModel>();
 
         try
         {
-            await authService.Verify(WhisperMapper.Mapper.Map<UserModel>(user));
+            var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
+            var tokens = await authService.Verify(userModel);
 
             serviceResponse.Success = true;
-            serviceResponse.StatusCode = 201;
+            serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your account has been verified.";
+            serviceResponse.Data = tokens;
         }
         catch (Exception ex)
         {
-            serviceResponse = ex.ToServiceResponse<string>();
+            serviceResponse = ex.ToServiceResponse<TokensModel>();
         }
 
-        return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
+        return StatusCode(serviceResponse.StatusCode, serviceResponse.Data);
+    }
+
+    [HttpPost("refresh-tokens")]
+    public async Task<IActionResult> RefreshTokens()
+    {
+        var serviceResponse = new ServiceResponse<TokensModel>();
+
+        try
+        {
+            var tokens = await tokenService.RefreshTokens();
+
+            serviceResponse.Success = true;
+            serviceResponse.StatusCode = 200;
+            serviceResponse.Message = "Your account has been verified.";
+            serviceResponse.Data = tokens;
+        }
+        catch (Exception ex)
+        {
+            serviceResponse = ex.ToServiceResponse<TokensModel>();
+        }
+
+        return StatusCode(serviceResponse.StatusCode, serviceResponse.Data);
     }
 }

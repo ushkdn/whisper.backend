@@ -12,7 +12,7 @@ using Whisper.Data;
 namespace Whisper.Data.Migrations
 {
     [DbContext(typeof(WhisperDbContext))]
-    [Migration("20241209134236_Initial")]
+    [Migration("20241215055039_Initial")]
     partial class Initial
     {
         /// <inheritdoc />

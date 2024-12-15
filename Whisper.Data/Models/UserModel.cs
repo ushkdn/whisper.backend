@@ -1,4 +1,5 @@
-﻿using Whisper.Data.Models.Base;
+﻿using Whisper.Data.Entities;
+using Whisper.Data.Models.Base;
 
 namespace Whisper.Data.Models;
 
@@ -22,4 +23,5 @@ public record UserModel : ModelBase
     public string? SecretCode { get; set; }
 
     public virtual LocationModel? Location { get; set; }
+    public virtual RefreshTokenModel? RefreshToken { get; set; }
 }

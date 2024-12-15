@@ -2,10 +2,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
+using System.ComponentModel;
 using Whisper.Data.Repositories.Base;
 using Whisper.Data.Repositories.CacheRepository;
 using Whisper.Data.Repositories.GroupRepository;
 using Whisper.Data.Repositories.LocationRepository;
+using Whisper.Data.Repositories.RefreshTokenRepository;
 using Whisper.Data.Repositories.UserRepository;
 using Whisper.Data.Transactions;
 
@@ -20,6 +22,7 @@ public static class DataDependencyContainerConfiguration
         services.AddScoped<IGroupRepository, GroupRepository>();
         services.AddScoped<ILocationRepository, LocationRepository>();
         services.AddScoped<ITransactionManager, TransactionManager>();
+        services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
     }
 
     public static void RegisterDatabase(IServiceCollection services, IConfiguration configuration, string dbConnectionStringKey)

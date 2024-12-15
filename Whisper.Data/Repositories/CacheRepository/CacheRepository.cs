@@ -17,15 +17,13 @@ public class CacheRepository : ICacheRepository
     {
         var storedList = await GetListAsync<TTable>(key);
 
-        return storedList.Where(x => x.Id == id).FirstOrDefault()
-            ?? throw new KeyNotFoundException($"Unable to find entry with key:{key} and id:{id}");
+        return storedList.Where(x => x.Id == id).FirstOrDefault();
     }
 
     public async Task<List<TTable>> GetListAsync<TTable>(string key) where TTable : class, IEntity
     {
         var listValue = await cache.ListRangeAsync(key);
-        var storedList = listValue.Select(value => JsonConvert.DeserializeObject<TTable>(value)).ToList()
-            ?? throw new InvalidOperationException($"Unable to parse data with key:{key} from cache storage");
+        var storedList = listValue.Select(value => JsonConvert.DeserializeObject<TTable>(value)).ToList();
 
         return storedList;
     }
@@ -61,7 +59,6 @@ public class CacheRepository : ICacheRepository
             var elementValue = await GetSingleFromListAsync<TTable>(key, id);
             await cache.ListRemoveAsync(key, JsonConvert.SerializeObject(elementValue));
         }
-        throw new KeyNotFoundException($"Unable to find entry with key:{key} and id:{id} to delete from cache storage");
     }
 
     public async Task RemoveAllAsync(string key)
@@ -85,10 +82,10 @@ public class CacheRepository : ICacheRepository
         var value = await cache.StringGetAsync(key);
         if (!String.IsNullOrEmpty(value))
         {
-            var parsedValue = JsonConvert.DeserializeObject<T>(value)
-                ?? throw new InvalidOperationException($"$Unable to parse data with key:{key} from cache storage");
+            var parsedValue = JsonConvert.DeserializeObject<T>(value);
             return parsedValue;
         }
-        return JsonConvert.DeserializeObject<T>(value);
+        //todo: return null
+        return default;
     }
 }

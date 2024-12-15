@@ -1,34 +1,87 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Whisper.Core.Helpers;
+using Whisper.Data.Entities;
+using Whisper.Data.Mapping;
 using Whisper.Data.Models;
+using Whisper.Data.Repositories.RefreshTokenRepository;
 
 namespace Whisper.Services.TokenService;
 
-public class TokenService(IConfiguration configuration) : ITokenService
+public class TokenService(
+    IConfiguration configuration,
+    IHttpContextAccessor httpContext,
+    IRefreshTokenRepository refreshTokenRepository
+    ) : ITokenService
 {
     private readonly string tokenHashKey = configuration.GetStringOrThrow("Token:HashKey");
 
-    public async Task RefreshToken()
+    public async Task<TokensModel> RefreshTokens()
     {
+        var refreshTokenFromCookie = httpContext.HttpContext.Request.Cookies["refresh-token"]
+            ?? throw new ArgumentException("Missing refresh-token. Please log-in again.");
+
+        var storedRefreshToken = WhisperMapper.Mapper.Map<RefreshTokenModel>(
+            await refreshTokenRepository.GetRelatedByTokenAsync(refreshTokenFromCookie)
+        );
+
+        if (storedRefreshToken.ExpireDate < DateTime.UtcNow)
+        {
+            httpContext.HttpContext.Response.Cookies.Delete("refresh-token");
+            throw new SecurityTokenExpiredException("Refresh token expired. Please log-in.");
+        }
+        var refreshToken = CreateRefreshToken();
+        var accessToken = CreateAccessToken(storedRefreshToken.User);
+        SetRefreshToken(refreshToken);
+        refreshTokenRepository.Update(WhisperMapper.Mapper.Map<RefreshTokenEntity>(refreshToken));
+        return new TokensModel
+        {
+            RefreshToken = refreshToken.Token,
+            AccessToken = accessToken,
+        };
     }
 
-    private RefreshTokenModel CreateRefreshToken()
+    public RefreshTokenModel CreateRefreshToken()
     {
         return new RefreshTokenModel
         {
             Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
             DateCreated = DateTime.UtcNow,
             DateUpdated = DateTime.UtcNow,
-            ExpiryDate = DateTime.UtcNow.AddDays(7)
+            ExpireDate = DateTime.UtcNow.AddDays(7)
         };
     }
 
-    private string CreateAccessToken(UserModel userModel)
+    public void SetRefreshToken(RefreshTokenModel refreshToken)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = refreshToken.ExpireDate
+        };
+
+        httpContext.HttpContext.Response.Cookies.Append("refresh-token", refreshToken.Token, cookieOptions);
+    }
+
+    public TokensModel CreateTokensAndSetRefreshToken(UserModel user)
+    {
+        var refreshToken = CreateRefreshToken();
+        var accessToken = CreateAccessToken(user);
+        SetRefreshToken(refreshToken);
+
+        return new TokensModel
+        {
+            RefreshToken = refreshToken.Token,
+            AccessToken = accessToken,
+        };
+    }
+
+    public string CreateAccessToken(UserModel userModel)
     {
         List<Claim> claims = new List<Claim>()
         {
