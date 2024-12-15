@@ -1,16 +1,16 @@
-﻿using Whisper.Data.Dtos.User;
+﻿using Whisper.Data.Models;
 
 namespace Whisper.Services.AuthService;
 
 public interface IAuthService
 {
-    Task Register(UserRegisterDto request);
+    Task Register(UserModel user);
 
-    Task LogIn(UserLogInDto request);
+    Task LogIn(UserModel user);
 
-    Task ForgotPassword(UserForgotPasswordDto request);
+    Task ForgotPassword(UserModel user);
 
-    Task ResetPassword(UserResetPasswordDto request);
+    Task ResetPassword(UserModel user);
 
-    Task Verify(UserVerifyDto request);
+    Task Verify(UserModel user);
 }

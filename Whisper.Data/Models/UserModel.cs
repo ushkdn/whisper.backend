@@ -19,6 +19,7 @@ public record UserModel : ModelBase
     public DateTime BirthDay { get; set; }
 
     public bool IsVerified { get; set; }
+    public string? SecretCode { get; set; }
 
     public virtual LocationModel? Location { get; set; }
 }

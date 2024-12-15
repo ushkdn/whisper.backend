@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Whisper.Data.Dtos.User;
 using Whisper.Data.Extensions;
+using Whisper.Data.Mapping;
+using Whisper.Data.Models;
 using Whisper.Data.Utils;
 using Whisper.Services.AuthService;
 
@@ -49,7 +51,7 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         try
         {
-            await authService.Register(user);
+            await authService.Register(WhisperMapper.Mapper.Map<UserModel>(user));
 
             serviceResponse.StatusCode = 201;
             serviceResponse.Success = true;
@@ -93,7 +95,7 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         try
         {
-            await authService.ForgotPassword(user);
+            await authService.ForgotPassword(WhisperMapper.Mapper.Map<UserModel>(user));
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 200;
@@ -114,7 +116,7 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         try
         {
-            await authService.ResetPassword(user);
+            await authService.ResetPassword(WhisperMapper.Mapper.Map<UserModel>(user));
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;
@@ -135,7 +137,7 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         try
         {
-            await authService.LogIn(user);
+            await authService.LogIn(WhisperMapper.Mapper.Map<UserModel>(user));
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;
@@ -156,7 +158,7 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         try
         {
-            await authService.Verify(user);
+            await authService.Verify(WhisperMapper.Mapper.Map<UserModel>(user));
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;

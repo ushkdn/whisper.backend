@@ -1,7 +1,5 @@
-﻿using System.Text.RegularExpressions;
-using Whisper.Data;
+﻿using Whisper.Data;
 using Whisper.Data.CacheModels;
-using Whisper.Data.Dtos.User;
 using Whisper.Data.Entities;
 using Whisper.Data.Mapping;
 using Whisper.Data.Models;
@@ -19,26 +17,16 @@ public class AuthService(
     ICacheRepository cacheRepository,
     IMessageService messageService) : IAuthService
 {
-    private const string EMAIL_REGEX = @"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$";
-
-    public async Task ForgotPassword(UserForgotPasswordDto request)
+    public async Task ForgotPassword(UserModel user)
     {
-        if (Regex.IsMatch(request.EmailOrPhoneNumber, EMAIL_REGEX))
-        {
-            //
-        }
-        else
-        {
-            //
-        }
     }
 
-    public async Task LogIn(UserLogInDto request)
+    public async Task LogIn(UserModel user)
     {
-        var storedUser = await userRepository.GetByEmailAsync(request.Email)
+        var storedUser = await userRepository.GetByEmailAsync(user.Email)
             ?? throw new ArgumentException("Wrong email or password.");
 
-        if (!BCrypt.Net.BCrypt.Verify(request.Password, storedUser?.Password))
+        if (!BCrypt.Net.BCrypt.Verify(user.Password, storedUser?.Password))
         {
             throw new ArgumentException("Wrong email/phonenumber or password.");
         }
@@ -51,32 +39,32 @@ public class AuthService(
         //token zone should be here
     }
 
-    public async Task Register(UserRegisterDto request)
+    public async Task Register(UserModel user)
     {
         //remove all not verified accs via quartz every 1h??
-        var storedUser = await userRepository.GetByEmailAsync(request.Email);
+        var storedUser = await userRepository.GetByEmailAsync(user.Email);
         if (storedUser is not null)
         {
             throw new InvalidOperationException("User already exists.");
         }
 
-        request.Password = BCrypt.Net.BCrypt.HashPassword(request.Password);
+        user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
-        await userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(request));
+        await userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(user));
         await transactionManager.SaveChangesAsync();
 
-        await messageService.SendMessage(new MessagePayload { UserEmail = request.Email, });
+        await messageService.SendMessage(new MessagePayload { UserEmail = user.Email, });
         //mail send here
     }
 
-    public async Task ResetPassword(UserResetPasswordDto user)
+    public async Task ResetPassword(UserModel user)
     {
     }
 
-    public async Task Verify(UserVerifyDto request)
+    public async Task Verify(UserModel user)
     {
         var cachedSecretCode = await cacheRepository.GetSingleAsync<CacheSecretCode>(
-            CacheTables.SECRET_CODE + $":{request.Email}"
+            CacheTables.SECRET_CODE + $":{user.Email}"
         );
 
         if (cachedSecretCode is null)
@@ -84,12 +72,12 @@ public class AuthService(
             throw new ArgumentNullException("Your secret code expires. Please try again.");
         }
 
-        if (request.SecretCode != cachedSecretCode.SecretCode)
+        if (user.SecretCode != cachedSecretCode.SecretCode)
         {
             throw new ArgumentException("Wrong email or secret code.");
         }
 
-        var storedUser = WhisperMapper.Mapper.Map<UserModel>(await userRepository.GetByEmailAsync(request.Email));
+        var storedUser = WhisperMapper.Mapper.Map<UserModel>(await userRepository.GetByEmailAsync(user.Email));
 
         if (storedUser.IsVerified)
         {
