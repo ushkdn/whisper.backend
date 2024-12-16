@@ -16,7 +16,6 @@ public partial class WhisperMapper
                 Country = e.Location.Country,
             }));
 
-        cfg.CreateMap<UserVerifyDto, UserModel>();
         cfg.CreateMap<UserUpdateDto, UserEntity>();
         cfg.CreateMap<UserEntity, UserModel>();
         cfg.CreateMap<UserModel, UserEntity>();

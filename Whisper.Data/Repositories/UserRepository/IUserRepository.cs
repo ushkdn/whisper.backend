@@ -9,5 +9,9 @@ public interface IUserRepository : IRepository<UserEntity>
 
     Task<UserEntity?> GetByEmailAsync(string email);
 
+    Task<UserEntity?> GetRelatedByIdAsync(Guid id);
+
+    Task<UserEntity?> GetRelatedByEmailAsync(string email);
+
     Task<UserEntity?> GetByPhoneNumberAsync(string phoneNumber);
 }

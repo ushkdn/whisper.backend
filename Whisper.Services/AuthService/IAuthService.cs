@@ -6,11 +6,11 @@ public interface IAuthService
 {
     Task Register(UserModel user);
 
-    Task<TokensModel> LogIn(UserModel user);
+    Task<TokensModel> LogIn(string email, string password);
 
-    Task ForgotPassword(UserModel user);
+    Task ForgotPassword(string email);
 
-    Task ResetPassword(UserModel user);
+    Task ResetPassword(Guid userId, string secretCode, string password);
 
-    Task<TokensModel> Verify(UserModel user);
+    Task<TokensModel> Verify(Guid userId, string secretCode);
 }

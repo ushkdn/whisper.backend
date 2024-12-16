@@ -2,7 +2,6 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
-using System.ComponentModel;
 using Whisper.Data.Repositories.Base;
 using Whisper.Data.Repositories.CacheRepository;
 using Whisper.Data.Repositories.GroupRepository;
