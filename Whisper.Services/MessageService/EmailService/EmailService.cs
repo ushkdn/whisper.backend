@@ -4,9 +4,6 @@ using Microsoft.Extensions.Configuration;
 using MimeKit;
 using MimeKit.Text;
 using Whisper.Core.Helpers;
-using Whisper.Data;
-using Whisper.Data.CacheModels;
-using Whisper.Data.Repositories.CacheRepository;
 using Whisper.Data.Utils;
 
 namespace Whisper.Services.MessageService.EmailService;

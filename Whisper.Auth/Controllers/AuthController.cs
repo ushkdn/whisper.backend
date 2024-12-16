@@ -110,7 +110,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
     }
 
-    [HttpPost("reset-password/{userId:guid}")]
+    [HttpPost("/{userId:guid}/reset-password")]
     public async Task<IActionResult> ResetPassword([FromRoute] Guid userId, [FromBody] string password, [FromBody] string secretCode)
     {
         var serviceResponse = new ServiceResponse<string>();
