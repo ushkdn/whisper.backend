@@ -10,7 +10,7 @@ public interface IAuthService
 
     Task ForgotPassword(string email);
 
-    Task ResetPassword(Guid userId, string secretCode, string password);
+    Task ResetPassword(Guid userId, string password, string secretCode);
 
     Task<TokensModel> Verify(Guid userId, string secretCode);
 }

@@ -2,8 +2,8 @@
 
 namespace Whisper.Data.Entities.Base;
 
-public abstract record Entity : IEntity
+public abstract class Entity : IEntity
 {
     [Column("id")]
-    public Guid Id { get; init; }
+    public Guid Id { get; set; }
 }

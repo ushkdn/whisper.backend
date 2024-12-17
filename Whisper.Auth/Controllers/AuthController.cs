@@ -111,13 +111,13 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     [HttpPost("/{userId:guid}/reset-password")]
-    public async Task<IActionResult> ResetPassword([FromRoute] Guid userId, [FromBody] string password, [FromBody] string secretCode)
+    public async Task<IActionResult> ResetPassword([FromRoute] Guid userId, [FromBody] UserResetPasswordDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
 
         try
         {
-            await authService.ResetPassword(userId, secretCode, password);
+            await authService.ResetPassword(userId, user.Password, user.SecretCode);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;
@@ -132,13 +132,13 @@ public class AuthController(IAuthService authService) : ControllerBase
     }
 
     [HttpPost("log-in")]
-    public async Task<IActionResult> LogIn([FromBody] string email, [FromBody] string password)
+    public async Task<IActionResult> LogIn([FromBody] UserLogInDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
 
         try
         {
-            await authService.LogIn(email, password);
+            await authService.LogIn(user.Email, user.Password);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;

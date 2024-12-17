@@ -1,8 +1,5 @@
-﻿using Whisper.Data.Entities.Base;
+﻿using Whisper.Data.Dtos.Base;
 
 namespace Whisper.Data.Dtos.Location;
 
-public record GetLocationDto : Entity
-{
-    public required string Country { get; init; }
-}
+public record GetLocationDto(Guid Id, string Country) : Dto(Id);

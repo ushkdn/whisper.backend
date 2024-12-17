@@ -2,7 +2,7 @@
 
 namespace Whisper.Data.Entities.Base;
 
-public abstract record EntityBase : Entity
+public abstract class EntityBase : Entity
 {
     [Column("date_created")]
     public DateTime DateCreated { get; set; }

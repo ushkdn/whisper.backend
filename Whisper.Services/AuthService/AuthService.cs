@@ -108,7 +108,7 @@ public class AuthService(
         );
     }
 
-    public async Task ResetPassword(Guid userId, string secretCode, string password)
+    public async Task ResetPassword(Guid userId, string password, string secretCode)
     {
         var storedUser = WhisperMapper.Mapper.Map<UserModel>(await userRepository.GetByIdAsync(userId))
             ?? throw new KeyNotFoundException($"Unable to find user by id: {userId}");

@@ -1,17 +1,16 @@
-﻿using Whisper.Data.Dtos.Location;
-using Whisper.Data.Entities.Base;
+﻿using Whisper.Data.Dtos.Base;
+using Whisper.Data.Dtos.Location;
 
 namespace Whisper.Data.Dtos.User;
 
-public record GetUserDto : EntityBase
-{
-    public required string Surname { get; init; }
-
-    public required string Name { get; init; }
-
-    public required string Username { get; init; }
-
-    public DateTime Birthday { get; init; }
-
-    public required GetLocationDto Location { get; init; }
-}
+public record class GetUserDto
+(
+    Guid Id,
+    string Surname,
+    string Name,
+    string Username,
+    DateTime Birthday,
+    GetLocationDto Location,
+    DateTime DateCreated,
+    DateTime DateUpdated
+) : DtoBase(Id, DateCreated, DateUpdated);
