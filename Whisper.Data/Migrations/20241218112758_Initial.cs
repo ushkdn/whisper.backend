@@ -1,11 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace Whisper.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Migration_Name : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -45,7 +46,6 @@ namespace Whisper.Data.Migrations
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     Token = table.Column<string>(type: "text", nullable: false),
                     ExpireDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    userId = table.Column<Guid>(type: "uuid", nullable: true),
                     date_created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     date_updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -94,11 +94,6 @@ namespace Whisper.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_refresh_tokens_userId",
-                table: "refresh_tokens",
-                column: "userId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_users_email",
                 table: "users",
                 column: "email",
@@ -118,23 +113,19 @@ namespace Whisper.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_users_refresh_token_id",
                 table: "users",
-                column: "refresh_token_id");
+                column: "refresh_token_id",
+                unique: true);
 
-            migrationBuilder.AddForeignKey(
-                name: "FK_refresh_tokens_users_userId",
-                table: "refresh_tokens",
-                column: "userId",
-                principalTable: "users",
-                principalColumn: "id");
+            migrationBuilder.CreateIndex(
+                name: "IX_users_username",
+                table: "users",
+                column: "username",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_refresh_tokens_users_userId",
-                table: "refresh_tokens");
-
             migrationBuilder.DropTable(
                 name: "groups");
 

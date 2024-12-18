@@ -12,8 +12,8 @@ using Whisper.Data;
 namespace Whisper.Data.Migrations
 {
     [DbContext(typeof(WhisperDbContext))]
-    [Migration("20241216004916_Migration_Name")]
-    partial class Migration_Name
+    [Migration("20241218112758_Initial")]
+    partial class Initial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -103,12 +103,7 @@ namespace Whisper.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("userId")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("userId");
 
                     b.ToTable("refresh_tokens");
                 });
@@ -182,20 +177,15 @@ namespace Whisper.Data.Migrations
                     b.HasIndex("PhoneNumber")
                         .IsUnique();
 
+                    b.HasIndex("Username")
+                        .IsUnique();
+
                     b.HasIndex("location_id");
 
-                    b.HasIndex("refresh_token_id");
+                    b.HasIndex("refresh_token_id")
+                        .IsUnique();
 
                     b.ToTable("users");
-                });
-
-            modelBuilder.Entity("Whisper.Data.Entities.RefreshTokenEntity", b =>
-                {
-                    b.HasOne("Whisper.Data.Entities.UserEntity", "User")
-                        .WithMany()
-                        .HasForeignKey("userId");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Whisper.Data.Entities.UserEntity", b =>
@@ -205,8 +195,8 @@ namespace Whisper.Data.Migrations
                         .HasForeignKey("location_id");
 
                     b.HasOne("Whisper.Data.Entities.RefreshTokenEntity", "RefreshToken")
-                        .WithMany()
-                        .HasForeignKey("refresh_token_id");
+                        .WithOne("User")
+                        .HasForeignKey("Whisper.Data.Entities.UserEntity", "refresh_token_id");
 
                     b.Navigation("Location");
 
@@ -214,6 +204,11 @@ namespace Whisper.Data.Migrations
                 });
 
             modelBuilder.Entity("Whisper.Data.Entities.LocationEntity", b =>
+                {
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Whisper.Data.Entities.RefreshTokenEntity", b =>
                 {
                     b.Navigation("User");
                 });

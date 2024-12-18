@@ -27,6 +27,12 @@ internal sealed class UserRepository(WhisperDbContext context) : Repository<User
             .Where(x => x.Email == email)
             .SingleOrDefaultAsync();
     }
+    public async Task<UserEntity?> GetByUsernameAsync(string username)
+    {
+        return await DbContext.Users
+            .Where(x => x.Username == username)
+            .SingleOrDefaultAsync();
+    }
 
     public async Task<UserEntity?> GetRelatedByEmailAsync(string email)
     {
