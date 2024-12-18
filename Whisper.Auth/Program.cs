@@ -4,7 +4,7 @@ using Whisper.Core.Registries;
 using Whisper.Data;
 using Whisper.Data.Extensions;
 using Whisper.Services.AuthService;
-using Whisper.Services.MessageService;
+using Whisper.Services.IoC.MessageService;
 using Whisper.Services.MessageService.EmailService;
 using Whisper.Services.TokenService;
 
@@ -48,10 +48,13 @@ public class Program
         DataDependencyContainerConfiguration.RegisterCacheStorage(builder.Services, builder.Configuration, "Redis");
         DataDependencyContainerConfiguration.SetNpgsqlContext();
 
-        builder.Services.AddScoped<IMessageService, EmailService>();
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
         builder.Services.AddHttpContextAccessor();
+        builder.Services.AddScoped<EmailService>();
+
+        //todo: mb rewrite architecture?
+        MessageServiceContainer.RegisterResolvingMessageService(builder.Services);
 
         var app = builder.Build();
 

@@ -8,8 +8,9 @@ using Whisper.Data.Repositories.CacheRepository;
 using Whisper.Data.Repositories.UserRepository;
 using Whisper.Data.Transactions;
 using Whisper.Data.Utils;
-using Whisper.Services.MessageService;
+using Whisper.Services.IoC.MessageService;
 using Whisper.Services.TokenService;
+using static Whisper.Services.IoC.MessageService.MessageServiceContainer;
 
 namespace Whisper.Services.AuthService;
 
@@ -17,8 +18,8 @@ public class AuthService(
     IUserRepository userRepository,
     ITransactionManager transactionManager,
     ICacheRepository cacheRepository,
-    IMessageService emailService,
-    ITokenService tokenService
+    ITokenService tokenService,
+    MessageServiceResolver messageService
     ) : IAuthService
 {
     public async Task ForgotPassword(string email)
@@ -32,6 +33,8 @@ public class AuthService(
             Topic = "Secret code for password reset",
             Message = CodeGenerator.GenerateSecurityCode(),
         };
+
+        var emailService = messageService(MessageServiceType.Email);
         await emailService.SendMessage(msgPayload);
 
         await cacheRepository.SetSingleAsync(
@@ -96,6 +99,7 @@ public class AuthService(
             Topic = "Secret code for account verification",
             Message = CodeGenerator.GenerateSecurityCode(),
         };
+        var emailService = messageService(MessageServiceType.Email);
         await emailService.SendMessage(msgPayload);
 
         await cacheRepository.SetSingleAsync(
