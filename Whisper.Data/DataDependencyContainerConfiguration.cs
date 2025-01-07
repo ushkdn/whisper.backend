@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using FluentValidation;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
@@ -9,6 +10,8 @@ using Whisper.Data.Repositories.LocationRepository;
 using Whisper.Data.Repositories.RefreshTokenRepository;
 using Whisper.Data.Repositories.UserRepository;
 using Whisper.Data.Transactions;
+using Whisper.Data.Validations.DtosValidations.LocationDtoValidations;
+using Whisper.Data.Validations.DtosValidations.UserDtosValidations;
 
 namespace Whisper.Data;
 
@@ -48,5 +51,13 @@ public static class DataDependencyContainerConfiguration
     public static void SetNpgsqlContext()
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+    }
+
+    public static void RegisterValidators(IServiceCollection services)
+    {
+        services.AddValidatorsFromAssemblyContaining<UserRegisterDtoValidation>();
+        services.AddValidatorsFromAssemblyContaining<AddLocationDtoValidation>();
+        services.AddValidatorsFromAssemblyContaining<UserResetPasswordDtoValidation>();
+        services.AddValidatorsFromAssemblyContaining<UserLogInDtoValidation>();
     }
 }

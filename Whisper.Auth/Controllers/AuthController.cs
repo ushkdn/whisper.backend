@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
 using Whisper.Data.Dtos.User;
 using Whisper.Data.Extensions;
 using Whisper.Data.Mapping;
 using Whisper.Data.Models;
 using Whisper.Data.Utils;
+using Whisper.Data.Validations.DtosValidations.UserDtosValidations;
 using Whisper.Services.AuthService;
 
 namespace Whisper.User.Controllers;
@@ -45,12 +47,17 @@ public class AuthController(IAuthService authService) : ControllerBase
     #endregion RegisterSwaggerDoc
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
+    public async Task<IActionResult> Register(IValidator<UserRegisterDto> validator, [FromBody] UserRegisterDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
 
         try
         {
+            var validationResult = validator.Validate(user);
+            if (!validationResult.IsValid)
+            {
+                serviceResponse.Data = Results.ValidationProblem(validationResult.ToDictionary());
+            }
             var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
             await authService.Register(userModel);
 

@@ -46,6 +46,7 @@ public class Program
         DataDependencyContainerConfiguration.RegisterServices(builder.Services);
         DataDependencyContainerConfiguration.RegisterDatabase(builder.Services, builder.Configuration, "Postgres");
         DataDependencyContainerConfiguration.RegisterCacheStorage(builder.Services, builder.Configuration, "Redis");
+        DataDependencyContainerConfiguration.RegisterValidators(builder.Services);
         DataDependencyContainerConfiguration.SetNpgsqlContext();
 
         builder.Services.AddScoped<ITokenService, TokenService>();
