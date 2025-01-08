@@ -56,7 +56,7 @@ public class AuthController(IAuthService authService) : ControllerBase
             var validationResult = validator.Validate(user);
             if (!validationResult.IsValid)
             {
-                serviceResponse.Data = Results.ValidationProblem(validationResult.ToDictionary());
+                //  serviceResponse.Data = Results.ValidationProblem(validationResult.ToDictionary());
             }
             var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
             await authService.Register(userModel);

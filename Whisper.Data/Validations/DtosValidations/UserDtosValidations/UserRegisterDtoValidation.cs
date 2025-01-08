@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Whisper.Data.Dtos.User;
+using Whisper.Data.Validations.DtosValidations.LocationDtoValidations;
 
 namespace Whisper.Data.Validations.DtosValidations.UserDtosValidations;
 
