@@ -7,7 +7,7 @@
     <ProjectGuid>83847df3-e8a7-4914-a5cf-5fc76a510ca3</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
     <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/swagger</DockerServiceUrl>
-    <DockerServiceName>whisper.user</DockerServiceName>
+    <DockerServiceName>whisper.auth</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">

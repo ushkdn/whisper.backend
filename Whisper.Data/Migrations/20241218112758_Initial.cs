@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -39,19 +40,18 @@ namespace Whisper.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RefreshTokens",
+                name: "refresh_tokens",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     Token = table.Column<string>(type: "text", nullable: false),
                     ExpireDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: true),
                     date_created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     date_updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RefreshTokens", x => x.id);
+                    table.PrimaryKey("PK_refresh_tokens", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -62,14 +62,13 @@ namespace Whisper.Data.Migrations
                     surname = table.Column<string>(type: "text", nullable: false),
                     name = table.Column<string>(type: "text", nullable: false),
                     username = table.Column<string>(type: "character varying(15)", maxLength: 15, nullable: false),
-                    phone_number = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: false),
+                    phone_number = table.Column<string>(type: "character varying(11)", maxLength: 11, nullable: true),
                     email = table.Column<string>(type: "text", nullable: false),
-                    password = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    password = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
                     birthday = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     is_verified = table.Column<bool>(type: "boolean", nullable: false),
                     location_id = table.Column<Guid>(type: "uuid", nullable: true),
                     refresh_token_id = table.Column<Guid>(type: "uuid", nullable: true),
-                    user_id = table.Column<Guid>(type: "uuid", nullable: true),
                     date_created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     date_updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -77,19 +76,14 @@ namespace Whisper.Data.Migrations
                 {
                     table.PrimaryKey("PK_users", x => x.id);
                     table.ForeignKey(
-                        name: "FK_users_RefreshTokens_refresh_token_id",
-                        column: x => x.refresh_token_id,
-                        principalTable: "RefreshTokens",
-                        principalColumn: "id");
-                    table.ForeignKey(
                         name: "FK_users_locations_location_id",
                         column: x => x.location_id,
                         principalTable: "locations",
                         principalColumn: "id");
                     table.ForeignKey(
-                        name: "FK_users_locations_user_id",
-                        column: x => x.user_id,
-                        principalTable: "locations",
+                        name: "FK_users_refresh_tokens_refresh_token_id",
+                        column: x => x.refresh_token_id,
+                        principalTable: "refresh_tokens",
                         principalColumn: "id");
                 });
 
@@ -98,11 +92,6 @@ namespace Whisper.Data.Migrations
                 table: "locations",
                 column: "country",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_RefreshTokens_user_id",
-                table: "RefreshTokens",
-                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_users_email",
@@ -124,28 +113,19 @@ namespace Whisper.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_users_refresh_token_id",
                 table: "users",
-                column: "refresh_token_id");
+                column: "refresh_token_id",
+                unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_users_user_id",
+                name: "IX_users_username",
                 table: "users",
-                column: "user_id");
-
-            migrationBuilder.AddForeignKey(
-                name: "FK_RefreshTokens_users_user_id",
-                table: "RefreshTokens",
-                column: "user_id",
-                principalTable: "users",
-                principalColumn: "id");
+                column: "username",
+                unique: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropForeignKey(
-                name: "FK_RefreshTokens_users_user_id",
-                table: "RefreshTokens");
-
             migrationBuilder.DropTable(
                 name: "groups");
 
@@ -153,10 +133,10 @@ namespace Whisper.Data.Migrations
                 name: "users");
 
             migrationBuilder.DropTable(
-                name: "RefreshTokens");
+                name: "locations");
 
             migrationBuilder.DropTable(
-                name: "locations");
+                name: "refresh_tokens");
         }
     }
 }

@@ -2,7 +2,7 @@
 
 namespace Whisper.Data.Models;
 
-public record UserModel : ModelBase
+public class UserModel : ModelBase
 {
     public string? Surname { get; set; }
 
@@ -21,4 +21,5 @@ public record UserModel : ModelBase
     public bool IsVerified { get; set; }
 
     public virtual LocationModel? Location { get; set; }
+    public virtual RefreshTokenModel? RefreshToken { get; set; }
 }

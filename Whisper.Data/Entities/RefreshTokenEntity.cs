@@ -6,12 +6,11 @@ namespace Whisper.Data.Entities;
 
 [Table(Tables.REFRESH_TOKEN)]
 [PrimaryKey(nameof(Id))]
-public record RefreshTokenEntity : EntityBase
+public class RefreshTokenEntity : EntityBase
 {
-    public required string Token { get; init; }
+    public required string Token { get; set; }
 
-    public required DateTime ExpireDate { get; init; }
+    public required DateTime ExpireDate { get; set; }
 
-    [ForeignKey("user_id")]
-    public virtual UserEntity? User { get; init; }
+    public virtual UserEntity? User { get; set; }
 }

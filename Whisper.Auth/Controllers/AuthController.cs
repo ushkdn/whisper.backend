@@ -1,14 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Whisper.Data.Dtos.Tokens;
 using Whisper.Data.Dtos.User;
 using Whisper.Data.Extensions;
+using Whisper.Data.Mapping;
+using Whisper.Data.Models;
 using Whisper.Data.Utils;
-using Whisper.Services.UserService;
+using Whisper.Services.AuthService;
 
 namespace Whisper.User.Controllers;
 
-[Route("api/users")]
+[Route("api/auth")]
 [ApiController]
-public class UserController(IUserService userService) : Controller
+public class AuthController(IAuthService authService) : ControllerBase
 {
     #region RegisterSwaggerDoc
 
@@ -42,25 +45,28 @@ public class UserController(IUserService userService) : Controller
 
     #endregion RegisterSwaggerDoc
 
-    [HttpPost("/register")]
+    [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
 
         try
         {
-            await userService.Register(user);
+            var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
 
-            serviceResponse.StatusCode = 201;
+            await authService.Register(userModel);
+
             serviceResponse.Success = true;
+            serviceResponse.StatusCode = 201;
             serviceResponse.Message = "Your account has been created.";
+            serviceResponse.Data = null;
         }
         catch (Exception ex)
         {
-            ex.ToServiceResponse<string>();
+            serviceResponse = ex.ToServiceResponse<string>();
         }
 
-        return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
+        return StatusCode(serviceResponse.StatusCode, serviceResponse);
     }
 
     #region LogInSwaggerDoc
@@ -86,87 +92,91 @@ public class UserController(IUserService userService) : Controller
 
     #endregion LogInSwaggerDoc
 
-    [HttpPost("/login")]
-    public async Task<IActionResult> ForgotPassword([FromBody] UserForgotPasswordDto user)
+    [HttpPost("forgot-password")]
+    public async Task<IActionResult> ForgotPassword([FromBody] string email)
     {
         var serviceResponse = new ServiceResponse<string>();
 
         try
         {
-            await userService.ForgotPassword(user);
+            await authService.ForgotPassword(email);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Code for password reset sent to your email.";
+            serviceResponse.Data = null;
         }
         catch (Exception ex)
         {
             serviceResponse = ex.ToServiceResponse<string>();
         }
 
-        return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
+        return StatusCode(serviceResponse.StatusCode, serviceResponse);
     }
 
-    [HttpPost("/reset-password")]
-    public async Task<IActionResult> ResetPassword([FromBody] UserResetPasswordDto user)
+    [HttpPost("/{userId:guid}/reset-password")]
+    public async Task<IActionResult> ResetPassword([FromRoute] Guid userId, [FromBody] UserResetPasswordDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
 
         try
         {
-            await userService.ResetPassword(user);
+            await authService.ResetPassword(userId, user.Password, user.SecretCode);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;
             serviceResponse.Message = "Password changed.";
+            serviceResponse.Data = null;
         }
         catch (Exception ex)
         {
             serviceResponse = ex.ToServiceResponse<string>();
         }
 
-        return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
+        return StatusCode(serviceResponse.StatusCode, serviceResponse);
     }
 
-    [HttpPost("/log-in")]
+    [HttpPost("log-in")]
     public async Task<IActionResult> LogIn([FromBody] UserLogInDto user)
     {
-        var serviceResponse = new ServiceResponse<string>();
+        var serviceResponse = new ServiceResponse<GetAuthTokensDto>();
 
         try
         {
-            await userService.LogIn(user);
+            var authTokens = await authService.LogIn(user.Email, user.Password);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;
             serviceResponse.Message = "You are logged in.";
+            serviceResponse.Data = new GetAuthTokensDto(authTokens.AccessToken, authTokens.RefreshToken.Token);
         }
         catch (Exception ex)
         {
-            serviceResponse = ex.ToServiceResponse<string>();
+            serviceResponse = ex.ToServiceResponse<GetAuthTokensDto>();
         }
 
-        return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
+        return StatusCode(serviceResponse.StatusCode, serviceResponse);
     }
 
-    [HttpPost("/verify")]
-    public async Task<IActionResult> Verify([FromBody] UserVerifyDto user)
+    [HttpPost("/{userId:guid}/verify")]
+    public async Task<IActionResult> Verify([FromRoute] Guid userId, [FromBody] string secretCode)
     {
-        var serviceResponse = new ServiceResponse<string>();
+        var serviceResponse = new ServiceResponse<GetAuthTokensDto>();
 
         try
         {
-            await userService.Verify(user);
+            var authTokens = await authService.Verify(userId, secretCode);
 
             serviceResponse.Success = true;
-            serviceResponse.StatusCode = 201;
+            serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your account has been verified.";
+            serviceResponse.Data = new GetAuthTokensDto(authTokens.AccessToken, authTokens.RefreshToken.Token);
         }
         catch (Exception ex)
         {
-            serviceResponse = ex.ToServiceResponse<string>();
+            serviceResponse = ex.ToServiceResponse<GetAuthTokensDto>();
         }
 
-        return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
+        return StatusCode(serviceResponse.StatusCode, serviceResponse);
     }
 }

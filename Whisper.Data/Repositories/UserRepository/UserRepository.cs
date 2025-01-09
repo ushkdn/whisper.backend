@@ -10,22 +10,42 @@ internal sealed class UserRepository(WhisperDbContext context) : Repository<User
     {
         return await DbContext.Users
             .Where(x => x.Email == email && x.PhoneNumber == phoneNumber)
-            .FirstOrDefaultAsync();
+            .SingleOrDefaultAsync();
     }
 
-    public async Task<UserEntity> GetByEmailAsync(string email)
+    public async Task<UserEntity?> GetRelatedByIdAsync(Guid id)
+    {
+        return await DbContext.Users
+            .Where(x => x.Id == id)
+            .Include(x => x.RefreshToken)
+            .SingleOrDefaultAsync();
+    }
+
+    public async Task<UserEntity?> GetByEmailAsync(string email)
     {
         return await DbContext.Users
             .Where(x => x.Email == email)
-            .FirstOrDefaultAsync()
-            ?? throw new KeyNotFoundException($"Unable to find user by email: {email}");
+            .SingleOrDefaultAsync();
+    }
+    public async Task<UserEntity?> GetByUsernameAsync(string username)
+    {
+        return await DbContext.Users
+            .Where(x => x.Username == username)
+            .SingleOrDefaultAsync();
     }
 
-    public async Task<UserEntity> GetByPhoneNumberAsync(string phoneNumber)
+    public async Task<UserEntity?> GetRelatedByEmailAsync(string email)
+    {
+        return await DbContext.Users
+            .Where(x => x.Email == email)
+            .Include(x => x.RefreshToken)
+            .SingleOrDefaultAsync();
+    }
+
+    public async Task<UserEntity?> GetByPhoneNumberAsync(string phoneNumber)
     {
         return await DbContext.Users
             .Where(x => x.PhoneNumber == phoneNumber)
-            .FirstOrDefaultAsync()
-            ?? throw new KeyNotFoundException($"Unable to find user by phone-number: {phoneNumber}");
+            .SingleOrDefaultAsync();
     }
 }

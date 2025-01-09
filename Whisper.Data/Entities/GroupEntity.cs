@@ -7,7 +7,7 @@ namespace Whisper.Data.Entities;
 
 [Table(Tables.GROUP)]
 [PrimaryKey(nameof(Id))]
-public record GroupEntity : EntityBase
+public class GroupEntity : EntityBase
 {
     [Column("title")]
     [Required(ErrorMessage = "Title is required")]
@@ -22,5 +22,5 @@ public record GroupEntity : EntityBase
 
     [Column("is_closed")]
     [Required(ErrorMessage = "Group status(open/closed) is required")]
-    public bool IsClosed { get; set; }
+    public required bool IsClosed { get; set; }
 }

@@ -12,7 +12,7 @@ using Whisper.Data;
 namespace Whisper.Data.Migrations
 {
     [DbContext(typeof(WhisperDbContext))]
-    [Migration("20241202123917_Initial")]
+    [Migration("20241218112758_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -103,14 +103,9 @@ namespace Whisper.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("user_id")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
-                    b.HasIndex("user_id");
-
-                    b.ToTable("RefreshTokens");
+                    b.ToTable("refresh_tokens");
                 });
 
             modelBuilder.Entity("Whisper.Data.Entities.UserEntity", b =>
@@ -148,12 +143,11 @@ namespace Whisper.Data.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)")
+                        .HasMaxLength(120)
+                        .HasColumnType("character varying(120)")
                         .HasColumnName("password");
 
                     b.Property<string>("PhoneNumber")
-                        .IsRequired()
                         .HasMaxLength(11)
                         .HasColumnType("character varying(11)")
                         .HasColumnName("phone_number");
@@ -175,9 +169,6 @@ namespace Whisper.Data.Migrations
                     b.Property<Guid?>("refresh_token_id")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid?>("user_id")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -186,37 +177,26 @@ namespace Whisper.Data.Migrations
                     b.HasIndex("PhoneNumber")
                         .IsUnique();
 
+                    b.HasIndex("Username")
+                        .IsUnique();
+
                     b.HasIndex("location_id");
 
-                    b.HasIndex("refresh_token_id");
-
-                    b.HasIndex("user_id");
+                    b.HasIndex("refresh_token_id")
+                        .IsUnique();
 
                     b.ToTable("users");
-                });
-
-            modelBuilder.Entity("Whisper.Data.Entities.RefreshTokenEntity", b =>
-                {
-                    b.HasOne("Whisper.Data.Entities.UserEntity", "User")
-                        .WithMany()
-                        .HasForeignKey("user_id");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Whisper.Data.Entities.UserEntity", b =>
                 {
                     b.HasOne("Whisper.Data.Entities.LocationEntity", "Location")
-                        .WithMany()
+                        .WithMany("User")
                         .HasForeignKey("location_id");
 
                     b.HasOne("Whisper.Data.Entities.RefreshTokenEntity", "RefreshToken")
-                        .WithMany()
-                        .HasForeignKey("refresh_token_id");
-
-                    b.HasOne("Whisper.Data.Entities.LocationEntity", null)
-                        .WithMany("User")
-                        .HasForeignKey("user_id");
+                        .WithOne("User")
+                        .HasForeignKey("Whisper.Data.Entities.UserEntity", "refresh_token_id");
 
                     b.Navigation("Location");
 
@@ -224,6 +204,11 @@ namespace Whisper.Data.Migrations
                 });
 
             modelBuilder.Entity("Whisper.Data.Entities.LocationEntity", b =>
+                {
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Whisper.Data.Entities.RefreshTokenEntity", b =>
                 {
                     b.Navigation("User");
                 });

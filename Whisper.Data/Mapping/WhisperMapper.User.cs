@@ -9,16 +9,17 @@ public partial class WhisperMapper
 {
     private static void MapUser(IMapperConfigurationExpression cfg)
     {
-        cfg.CreateMap<UserRegisterDto, UserEntity>()
+        cfg.CreateMap<UserRegisterDto, UserModel>()
             .ForMember(m => m.Location,
-            cfg => cfg.MapFrom(e => new LocationEntity
+            cfg => cfg.MapFrom(e => new LocationModel
             {
                 Country = e.Location.Country,
             }));
+
+        cfg.CreateMap<UserUpdateDto, UserEntity>();
         cfg.CreateMap<UserEntity, UserModel>();
         cfg.CreateMap<UserModel, UserEntity>();
-        cfg.CreateMap<UserEntity, UserGetDto>();
-        cfg.CreateMap<UserUpdateDto, UserEntity>();
-        cfg.CreateMap<UserEntity, GetUserDto>();
+        cfg.CreateMap<UserModel, UserGetDto>();
+        cfg.CreateMap<UserModel, GetUserDto>();
     }
 }
