@@ -1,11 +1,10 @@
-﻿using FluentValidation;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using Whisper.Data.Dtos.Tokens;
 using Whisper.Data.Dtos.User;
 using Whisper.Data.Extensions;
 using Whisper.Data.Mapping;
 using Whisper.Data.Models;
 using Whisper.Data.Utils;
-using Whisper.Data.Validations.DtosValidations.UserDtosValidations;
 using Whisper.Services.AuthService;
 
 namespace Whisper.User.Controllers;
@@ -47,30 +46,27 @@ public class AuthController(IAuthService authService) : ControllerBase
     #endregion RegisterSwaggerDoc
 
     [HttpPost("register")]
-    public async Task<IActionResult> Register(IValidator<UserRegisterDto> validator, [FromBody] UserRegisterDto user)
+    public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
     {
         var serviceResponse = new ServiceResponse<string>();
 
         try
         {
-            var validationResult = validator.Validate(user);
-            if (!validationResult.IsValid)
-            {
-                //  serviceResponse.Data = Results.ValidationProblem(validationResult.ToDictionary());
-            }
             var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
+
             await authService.Register(userModel);
 
-            serviceResponse.StatusCode = 201;
             serviceResponse.Success = true;
+            serviceResponse.StatusCode = 201;
             serviceResponse.Message = "Your account has been created.";
+            serviceResponse.Data = null;
         }
         catch (Exception ex)
         {
             serviceResponse = ex.ToServiceResponse<string>();
         }
 
-        return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
+        return StatusCode(serviceResponse.StatusCode, serviceResponse);
     }
 
     #region LogInSwaggerDoc
@@ -108,13 +104,14 @@ public class AuthController(IAuthService authService) : ControllerBase
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Code for password reset sent to your email.";
+            serviceResponse.Data = null;
         }
         catch (Exception ex)
         {
             serviceResponse = ex.ToServiceResponse<string>();
         }
 
-        return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
+        return StatusCode(serviceResponse.StatusCode, serviceResponse);
     }
 
     [HttpPost("/{userId:guid}/reset-password")]
@@ -129,55 +126,57 @@ public class AuthController(IAuthService authService) : ControllerBase
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;
             serviceResponse.Message = "Password changed.";
+            serviceResponse.Data = null;
         }
         catch (Exception ex)
         {
             serviceResponse = ex.ToServiceResponse<string>();
         }
 
-        return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
+        return StatusCode(serviceResponse.StatusCode, serviceResponse);
     }
 
     [HttpPost("log-in")]
     public async Task<IActionResult> LogIn([FromBody] UserLogInDto user)
     {
-        var serviceResponse = new ServiceResponse<string>();
+        var serviceResponse = new ServiceResponse<GetAuthTokensDto>();
 
         try
         {
-            await authService.LogIn(user.Email, user.Password);
+            var authTokens = await authService.LogIn(user.Email, user.Password);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 201;
             serviceResponse.Message = "You are logged in.";
+            serviceResponse.Data = new GetAuthTokensDto(authTokens.AccessToken, authTokens.RefreshToken.Token);
         }
         catch (Exception ex)
         {
-            serviceResponse = ex.ToServiceResponse<string>();
+            serviceResponse = ex.ToServiceResponse<GetAuthTokensDto>();
         }
 
-        return StatusCode(serviceResponse.StatusCode, serviceResponse.Message);
+        return StatusCode(serviceResponse.StatusCode, serviceResponse);
     }
 
     [HttpPost("/{userId:guid}/verify")]
     public async Task<IActionResult> Verify([FromRoute] Guid userId, [FromBody] string secretCode)
     {
-        var serviceResponse = new ServiceResponse<AuthTokensModel>();
+        var serviceResponse = new ServiceResponse<GetAuthTokensDto>();
 
         try
         {
-            var tokens = await authService.Verify(userId, secretCode);
+            var authTokens = await authService.Verify(userId, secretCode);
 
             serviceResponse.Success = true;
             serviceResponse.StatusCode = 200;
             serviceResponse.Message = "Your account has been verified.";
-            serviceResponse.Data = tokens;
+            serviceResponse.Data = new GetAuthTokensDto(authTokens.AccessToken, authTokens.RefreshToken.Token);
         }
         catch (Exception ex)
         {
-            serviceResponse = ex.ToServiceResponse<AuthTokensModel>();
+            serviceResponse = ex.ToServiceResponse<GetAuthTokensDto>();
         }
 
-        return StatusCode(serviceResponse.StatusCode, serviceResponse.Data);
+        return StatusCode(serviceResponse.StatusCode, serviceResponse);
     }
 }
