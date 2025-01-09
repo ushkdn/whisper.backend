@@ -1,14 +1,14 @@
 ﻿namespace Whisper.Data.Utils;
 
-public record MessagePayload
+public class MessagePayload
 {
-    public string? UserEmail { get; set; }
+    public string? UserEmail { get; init; }
 
-    public int? UserId { get; set; }
+    public int? UserId { get; init; }
 
-    public string? Username { get; set; }
+    public string? Username { get; init; }
 
-    public string? Topic { get; set; }
+    public string? Topic { get; init; }
 
-    public string? Message { get; set; }
+    public string? Message { get; init; }
 }

@@ -2,7 +2,7 @@
 
 namespace Whisper.Data.Models;
 
-public record LocationModel
+public class LocationModel
 {
     public string? Country { get; set; }
 

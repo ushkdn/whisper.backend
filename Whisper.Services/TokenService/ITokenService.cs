@@ -4,13 +4,13 @@ namespace Whisper.Services.TokenService;
 
 public interface ITokenService
 {
-    Task<TokensModel> RefreshTokens();
-
-    RefreshTokenModel CreateRefreshToken();
+    Task<AuthTokensModel> RefreshTokens();
 
     void SetRefreshToken(RefreshTokenModel refreshToken);
 
+    RefreshTokenModel CreateRefreshToken();
+
     string CreateAccessToken(UserModel userModel);
 
-    TokensModel CreateTokensAndSetRefreshToken(UserModel user);
+    AuthTokensModel CreateTokensAndSetRefreshToken(UserModel user);
 }

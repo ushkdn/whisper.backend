@@ -21,7 +21,7 @@ public class TokenService(
 {
     private readonly string tokenHashKey = configuration.GetStringOrThrow("Token:HashKey");
 
-    public async Task<TokensModel> RefreshTokens()
+    public async Task<AuthTokensModel> RefreshTokens()
     {
         var refreshTokenFromCookie = httpContext.HttpContext.Request.Cookies["refresh-token"]
             ?? throw new ArgumentException("Missing refresh-token. Please log-in again.");
@@ -35,15 +35,12 @@ public class TokenService(
             httpContext.HttpContext.Response.Cookies.Delete("refresh-token");
             throw new SecurityTokenExpiredException("Refresh token expired. Please log-in.");
         }
-        var refreshToken = CreateRefreshToken();
-        var accessToken = CreateAccessToken(storedRefreshToken.User);
-        SetRefreshToken(refreshToken);
-        refreshTokenRepository.Update(WhisperMapper.Mapper.Map<RefreshTokenEntity>(refreshToken));
-        return new TokensModel
-        {
-            RefreshToken = refreshToken.Token,
-            AccessToken = accessToken,
-        };
+
+        var authTokens = CreateTokensAndSetRefreshToken(storedRefreshToken.User);
+
+        refreshTokenRepository.Update(WhisperMapper.Mapper.Map<RefreshTokenEntity>(authTokens.RefreshToken));
+
+        return new AuthTokensModel(authTokens.AccessToken, authTokens.RefreshToken);
     }
 
     public RefreshTokenModel CreateRefreshToken()
@@ -68,17 +65,13 @@ public class TokenService(
         httpContext.HttpContext.Response.Cookies.Append("refresh-token", refreshToken.Token, cookieOptions);
     }
 
-    public TokensModel CreateTokensAndSetRefreshToken(UserModel user)
+    public AuthTokensModel CreateTokensAndSetRefreshToken(UserModel user)
     {
         var refreshToken = CreateRefreshToken();
         var accessToken = CreateAccessToken(user);
         SetRefreshToken(refreshToken);
 
-        return new TokensModel
-        {
-            RefreshToken = refreshToken.Token,
-            AccessToken = accessToken,
-        };
+        return new AuthTokensModel(accessToken, refreshToken);
     }
 
     public string CreateAccessToken(UserModel userModel)
@@ -86,7 +79,7 @@ public class TokenService(
         List<Claim> claims = new List<Claim>()
         {
             new Claim("Id", $"{userModel.Id}"),
-            new Claim(ClaimTypes.Email, userModel?.Email),
+            new Claim(ClaimTypes.Email, userModel.Email),
         };
 
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(tokenHashKey));
@@ -98,7 +91,7 @@ public class TokenService(
             signingCredentials: creds
         );
 
-        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-        return jwt;
+        var accessToken = new JwtSecurityTokenHandler().WriteToken(token);
+        return accessToken;
     }
 }

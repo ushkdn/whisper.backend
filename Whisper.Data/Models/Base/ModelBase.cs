@@ -1,6 +1,6 @@
 ﻿namespace Whisper.Data.Models.Base;
 
-public abstract record ModelBase : Model
+public abstract class ModelBase : Model
 {
     public DateTime? DateCreated { get; set; }
 

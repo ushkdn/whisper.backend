@@ -2,7 +2,7 @@
 
 namespace Whisper.Data.Models;
 
-public record UserModel : ModelBase
+public class UserModel : ModelBase
 {
     public string? Surname { get; set; }
 

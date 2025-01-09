@@ -27,7 +27,7 @@ public class AuthService(
         var storedUser = WhisperMapper.Mapper.Map<UserModel>(await userRepository.GetByEmailAsync(email))
             ?? throw new KeyNotFoundException($"Unable to find user by email: {email}");
 
-        var msgPayload = new MessagePayload
+        var msgPayload = new MessagePayload()
         {
             UserEmail = email,
             Topic = "Secret code for password reset",
@@ -47,7 +47,7 @@ public class AuthService(
         );
     }
 
-    public async Task<TokensModel> LogIn(string email, string password)
+    public async Task<AuthTokensModel> LogIn(string email, string password)
     {
         var storedUser = WhisperMapper.Mapper.Map<UserModel>(await userRepository.GetRelatedByEmailAsync(email))
             ?? throw new ArgumentException("Wrong email or password.");
@@ -62,21 +62,15 @@ public class AuthService(
             throw new InvalidOperationException("Your account is not verified.");
         }
 
-        var refreshToken = tokenService.CreateRefreshToken();
-        var accessToken = tokenService.CreateAccessToken(storedUser);
-        tokenService.SetRefreshToken(refreshToken);
+        var authTokens = tokenService.CreateTokensAndSetRefreshToken(storedUser);
 
-        storedUser.RefreshToken = refreshToken;
+        storedUser.RefreshToken = authTokens.RefreshToken;
 
         userRepository.Update(WhisperMapper.Mapper.Map<UserEntity>(storedUser));
 
         await transactionManager.SaveChangesAsync();
 
-        return new TokensModel
-        {
-            RefreshToken = refreshToken.Token,
-            AccessToken = accessToken
-        };
+        return new AuthTokensModel(authTokens.AccessToken, authTokens.RefreshToken);
     }
 
     public async Task Register(UserModel user)
@@ -135,7 +129,7 @@ public class AuthService(
         await transactionManager.SaveChangesAsync();
     }
 
-    public async Task<TokensModel> Verify(Guid userId, string secretCode)
+    public async Task<AuthTokensModel> Verify(Guid userId, string secretCode)
     {
         var cachedSecretCode = await cacheRepository.GetSingleAsync<CacheSecretCode>
         (
@@ -160,20 +154,14 @@ public class AuthService(
             throw new InvalidOperationException("Your account already verified.");
         }
 
-        var refreshToken = tokenService.CreateRefreshToken();
-        var accessToken = tokenService.CreateAccessToken(storedUser);
-        tokenService.SetRefreshToken(refreshToken);
+        var authTokens = tokenService.CreateTokensAndSetRefreshToken(storedUser);
 
         storedUser.IsVerified = true;
-        storedUser.RefreshToken = refreshToken;
+        storedUser.RefreshToken = authTokens.RefreshToken;
 
         userRepository.Update(WhisperMapper.Mapper.Map<UserEntity>(storedUser));
         await transactionManager.SaveChangesAsync();
 
-        return new TokensModel
-        {
-            RefreshToken = refreshToken.Token,
-            AccessToken = accessToken
-        };
+        return new AuthTokensModel(authTokens.AccessToken, authTokens.RefreshToken);
     }
 }

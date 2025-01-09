@@ -162,7 +162,7 @@ public class AuthController(IAuthService authService) : ControllerBase
     [HttpPost("/{userId:guid}/verify")]
     public async Task<IActionResult> Verify([FromRoute] Guid userId, [FromBody] string secretCode)
     {
-        var serviceResponse = new ServiceResponse<TokensModel>();
+        var serviceResponse = new ServiceResponse<AuthTokensModel>();
 
         try
         {
@@ -175,7 +175,7 @@ public class AuthController(IAuthService authService) : ControllerBase
         }
         catch (Exception ex)
         {
-            serviceResponse = ex.ToServiceResponse<TokensModel>();
+            serviceResponse = ex.ToServiceResponse<AuthTokensModel>();
         }
 
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Data);

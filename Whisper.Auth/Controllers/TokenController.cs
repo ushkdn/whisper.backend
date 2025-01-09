@@ -13,7 +13,7 @@ public class TokenController(ITokenService tokenService) : ControllerBase
     [HttpPost("refresh-tokens")]
     public async Task<IActionResult> RefreshTokens()
     {
-        var serviceResponse = new ServiceResponse<TokensModel>();
+        var serviceResponse = new ServiceResponse<AuthTokensModel>();
 
         try
         {
@@ -26,7 +26,7 @@ public class TokenController(ITokenService tokenService) : ControllerBase
         }
         catch (Exception ex)
         {
-            serviceResponse = ex.ToServiceResponse<TokensModel>();
+            serviceResponse = ex.ToServiceResponse<AuthTokensModel>();
         }
 
         return StatusCode(serviceResponse.StatusCode, serviceResponse.Data);
