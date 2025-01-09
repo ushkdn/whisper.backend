@@ -78,7 +78,7 @@ public class AuthService(
 
         user.Password = BCrypt.Net.BCrypt.HashPassword(user.Password);
 
-        await userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(user));
+        var userId = await userRepository.CreateAsync(WhisperMapper.Mapper.Map<UserEntity>(user));
         await transactionManager.SaveChangesAsync();
 
         var msgPayload = new MessagePayload
@@ -91,7 +91,7 @@ public class AuthService(
         await ChoiceMessageServiceAndSendMessage(MessageServiceType.Email, msgPayload);
 
         await cacheRepository.SetSingleAsync(
-            CacheTables.SECRET_CODE + $":{msgPayload.UserEmail}",
+            CacheTables.SECRET_CODE + $":{userId.Value}",
             new CacheSecretCode
             {
                 SecretCode = msgPayload.Message
