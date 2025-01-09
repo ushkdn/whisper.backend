@@ -27,15 +27,14 @@ public class AuthService(
         var storedUser = WhisperMapper.Mapper.Map<UserModel>(await userRepository.GetByEmailAsync(email))
             ?? throw new KeyNotFoundException($"Unable to find user by email: {email}");
 
-        var msgPayload = new MessagePayload()
+        var msgPayload = new MessagePayload
         {
             UserEmail = email,
             Topic = "Secret code for password reset",
             Message = CodeGenerator.GenerateSecurityCode(),
         };
 
-        var emailService = messageService(MessageServiceType.Email);
-        await emailService.SendMessage(msgPayload);
+        await ChoiceMessageServiceAndSendMessage(MessageServiceType.Email, msgPayload);
 
         await cacheRepository.SetSingleAsync(
             CacheTables.SECRET_CODE + $":{msgPayload.UserEmail}",
@@ -57,18 +56,13 @@ public class AuthService(
             throw new ArgumentException("Wrong email/phonenumber or password.");
         }
 
-        if (!storedUser.IsVerified)
-        {
-            throw new InvalidOperationException("Your account is not verified.");
-        }
+        IsVerifiedUserOrThrow(storedUser);
 
         var authTokens = tokenService.CreateTokensAndSetRefreshToken(storedUser);
 
         storedUser.RefreshToken = authTokens.RefreshToken;
 
-        userRepository.Update(WhisperMapper.Mapper.Map<UserEntity>(storedUser));
-
-        await transactionManager.SaveChangesAsync();
+        await UpdateUserAndSaveChangesAsync(storedUser);
 
         return new AuthTokensModel(authTokens.AccessToken, authTokens.RefreshToken);
     }
@@ -93,8 +87,8 @@ public class AuthService(
             Topic = "Secret code for account verification",
             Message = CodeGenerator.GenerateSecurityCode(),
         };
-        var emailService = messageService(MessageServiceType.Email);
-        await emailService.SendMessage(msgPayload);
+
+        await ChoiceMessageServiceAndSendMessage(MessageServiceType.Email, msgPayload);
 
         await cacheRepository.SetSingleAsync(
             CacheTables.SECRET_CODE + $":{msgPayload.UserEmail}",
@@ -111,10 +105,7 @@ public class AuthService(
         var storedUser = WhisperMapper.Mapper.Map<UserModel>(await userRepository.GetByIdAsync(userId))
             ?? throw new KeyNotFoundException($"Unable to find user by id: {userId}");
 
-        if (!storedUser.IsVerified)
-        {
-            throw new InvalidOperationException("You have not verified your account.");
-        }
+        IsVerifiedUserOrThrow(storedUser);
 
         var cachedCode = await cacheRepository.GetSingleAsync<CacheSecretCode>(CacheTables.SECRET_CODE + $":{userId}")
             ?? throw new ArgumentException("Your code for password reset expired. Please try again.");
@@ -125,8 +116,8 @@ public class AuthService(
         }
 
         storedUser.Password = BCrypt.Net.BCrypt.HashPassword(password);
-        userRepository.Update(WhisperMapper.Mapper.Map<UserEntity>(storedUser));
-        await transactionManager.SaveChangesAsync();
+
+        await UpdateUserAndSaveChangesAsync(storedUser);
     }
 
     public async Task<AuthTokensModel> Verify(Guid userId, string secretCode)
@@ -159,9 +150,28 @@ public class AuthService(
         storedUser.IsVerified = true;
         storedUser.RefreshToken = authTokens.RefreshToken;
 
-        userRepository.Update(WhisperMapper.Mapper.Map<UserEntity>(storedUser));
-        await transactionManager.SaveChangesAsync();
+        await UpdateUserAndSaveChangesAsync(storedUser);
 
         return new AuthTokensModel(authTokens.AccessToken, authTokens.RefreshToken);
+    }
+
+    private async Task UpdateUserAndSaveChangesAsync(UserModel user)
+    {
+        userRepository.Update(WhisperMapper.Mapper.Map<UserEntity>(user));
+        await transactionManager.SaveChangesAsync();
+    }
+
+    private void IsVerifiedUserOrThrow(UserModel user)
+    {
+        if (!user.IsVerified)
+        {
+            throw new InvalidOperationException("You have not verified your account.");
+        }
+    }
+
+    private async Task ChoiceMessageServiceAndSendMessage(MessageServiceType type, MessagePayload msgPayload)
+    {
+        var emailService = messageService(MessageServiceType.Email);
+        await emailService.SendMessage(msgPayload);
     }
 }

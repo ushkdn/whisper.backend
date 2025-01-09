@@ -10,13 +10,15 @@ using Whisper.Data.Entities;
 using Whisper.Data.Mapping;
 using Whisper.Data.Models;
 using Whisper.Data.Repositories.RefreshTokenRepository;
+using Whisper.Data.Transactions;
 
 namespace Whisper.Services.TokenService;
 
 public class TokenService(
     IConfiguration configuration,
     IHttpContextAccessor httpContext,
-    IRefreshTokenRepository refreshTokenRepository
+    IRefreshTokenRepository refreshTokenRepository,
+    ITransactionManager transactionManager
     ) : ITokenService
 {
     private readonly string tokenHashKey = configuration.GetStringOrThrow("Token:HashKey");
@@ -39,30 +41,9 @@ public class TokenService(
         var authTokens = CreateTokensAndSetRefreshToken(storedRefreshToken.User);
 
         refreshTokenRepository.Update(WhisperMapper.Mapper.Map<RefreshTokenEntity>(authTokens.RefreshToken));
+        await transactionManager.SaveChangesAsync();
 
         return new AuthTokensModel(authTokens.AccessToken, authTokens.RefreshToken);
-    }
-
-    public RefreshTokenModel CreateRefreshToken()
-    {
-        return new RefreshTokenModel
-        {
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            DateCreated = DateTime.UtcNow,
-            DateUpdated = DateTime.UtcNow,
-            ExpireDate = DateTime.UtcNow.AddDays(7)
-        };
-    }
-
-    public void SetRefreshToken(RefreshTokenModel refreshToken)
-    {
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Expires = refreshToken.ExpireDate
-        };
-
-        httpContext.HttpContext.Response.Cookies.Append("refresh-token", refreshToken.Token, cookieOptions);
     }
 
     public AuthTokensModel CreateTokensAndSetRefreshToken(UserModel user)
@@ -74,7 +55,29 @@ public class TokenService(
         return new AuthTokensModel(accessToken, refreshToken);
     }
 
-    public string CreateAccessToken(UserModel userModel)
+    private RefreshTokenModel CreateRefreshToken()
+    {
+        return new RefreshTokenModel
+        {
+            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+            DateCreated = DateTime.UtcNow,
+            DateUpdated = DateTime.UtcNow,
+            ExpireDate = DateTime.UtcNow.AddDays(7)
+        };
+    }
+
+    private void SetRefreshToken(RefreshTokenModel refreshToken)
+    {
+        var cookieOptions = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = refreshToken.ExpireDate
+        };
+
+        httpContext.HttpContext.Response.Cookies.Append("refresh-token", refreshToken.Token, cookieOptions);
+    }
+
+    private string CreateAccessToken(UserModel userModel)
     {
         List<Claim> claims = new List<Claim>()
         {
