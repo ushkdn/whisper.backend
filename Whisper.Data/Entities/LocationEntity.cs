@@ -13,7 +13,7 @@ public class LocationEntity : Entity
     [Column("country")]
     [MinLength(5, ErrorMessage = "Country must be at least 5 characters.")]
     [MaxLength(25, ErrorMessage = "Country must be no more than 5 characters.")]
-    public required string Country { get; set; }
+    public string Country { get; set; }
 
     public virtual List<UserEntity>? User { get; set; }
 }

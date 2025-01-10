@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System.Runtime.CompilerServices;
 using Whisper.Services.MessageService;
 using Whisper.Services.MessageService.EmailService;
 

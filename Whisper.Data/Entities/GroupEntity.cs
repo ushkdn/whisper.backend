@@ -13,14 +13,14 @@ public class GroupEntity : EntityBase
     [Required(ErrorMessage = "Title is required")]
     [MinLength(5, ErrorMessage = "Title cannot be less than 5 characters.")]
     [MaxLength(20, ErrorMessage = "Title cannot be longer than 20 characters.")]
-    public required string Title { get; set; }
+    public string Title { get; set; }
 
     [Column("description")]
     [Required(ErrorMessage = "Description is required")]
     [MinLength(10, ErrorMessage = "Description cannot be less than 5 characters.")]
-    public required string Description { get; set; }
+    public string Description { get; set; }
 
     [Column("is_closed")]
     [Required(ErrorMessage = "Group status(open/closed) is required")]
-    public required bool IsClosed { get; set; }
+    public bool IsClosed { get; set; }
 }

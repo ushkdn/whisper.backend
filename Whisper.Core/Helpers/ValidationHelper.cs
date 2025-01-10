@@ -6,7 +6,7 @@ namespace Whisper.Core.Helpers;
 
 public static class ValidationHelper
 {
-    public static ServiceResponse<List<ValidationErrorModel>> IsValid<T>(IValidator<T> validator, T entry)
+    public static ServiceResponse<List<ValidationErrorModel>> Validate<T>(IValidator<T> validator, T entry)
     {
         var validationResults = validator.Validate(entry);
 
@@ -24,7 +24,6 @@ public static class ValidationHelper
                 StatusCode = 400,
                 Data = errors,
                 Message = "Validation errors"
-
             };
         }
         return new ServiceResponse<List<ValidationErrorModel>>

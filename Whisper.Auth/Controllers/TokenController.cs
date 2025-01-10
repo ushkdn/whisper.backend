@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Whisper.Data.Dtos.Tokens;
 using Whisper.Data.Extensions;
-using Whisper.Data.Models;
 using Whisper.Data.Utils;
 using Whisper.Services.TokenService;
 

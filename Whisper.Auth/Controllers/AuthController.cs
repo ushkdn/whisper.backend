@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
-using System.Runtime.Remoting;
 using Whisper.Core.Helpers;
 using Whisper.Data.Dtos.Tokens;
 using Whisper.Data.Dtos.User;
@@ -8,7 +7,6 @@ using Whisper.Data.Extensions;
 using Whisper.Data.Mapping;
 using Whisper.Data.Models;
 using Whisper.Data.Utils;
-using Whisper.Data.Validations;
 using Whisper.Services.AuthService;
 
 namespace Whisper.User.Controllers;
@@ -59,7 +57,7 @@ public class AuthController(
     {
         var serviceResponse = new ServiceResponse<string>();
 
-        var validationResult = ValidationHelper.IsValid(userRegisterDtoValidator, user);
+        var validationResult = ValidationHelper.Validate(userRegisterDtoValidator, user);
         if (!validationResult.Success)
         {
             return StatusCode(validationResult.StatusCode, validationResult);
@@ -67,7 +65,6 @@ public class AuthController(
 
         try
         {
-            
             var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
 
             await authService.Register(userModel);
@@ -136,7 +133,7 @@ public class AuthController(
     {
         var serviceResponse = new ServiceResponse<string>();
 
-        var validationResult = ValidationHelper.IsValid(userResetPasswordDtoValidator, user);
+        var validationResult = ValidationHelper.Validate(userResetPasswordDtoValidator, user);
         if (!validationResult.Success)
         {
             return StatusCode(validationResult.StatusCode, validationResult);
@@ -144,7 +141,6 @@ public class AuthController(
 
         try
         {
-
             await authService.ResetPassword(userId, user.Password, user.SecretCode);
 
             serviceResponse.Success = true;
@@ -165,7 +161,7 @@ public class AuthController(
     {
         var serviceResponse = new ServiceResponse<GetAuthTokensDto>();
 
-        var validationResult = ValidationHelper.IsValid(userLogInDtoValidator, user);
+        var validationResult = ValidationHelper.Validate(userLogInDtoValidator, user);
         if (!validationResult.Success)
         {
             return StatusCode(validationResult.StatusCode, validationResult);
