@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
+using System.Runtime.Remoting;
 using Whisper.Data.Dtos.Tokens;
 using Whisper.Data.Dtos.User;
 using Whisper.Data.Extensions;
@@ -11,7 +13,12 @@ namespace Whisper.User.Controllers;
 
 [Route("api/auth")]
 [ApiController]
-public class AuthController(IAuthService authService) : ControllerBase
+public class ValidationResults
+{
+    public string Error { get; set; }
+    public string Property { get; set; }
+}
+public class AuthController(IValidator<UserRegisterDto> validator, IAuthService authService) : ControllerBase
 {
     #region RegisterSwaggerDoc
 
@@ -50,8 +57,27 @@ public class AuthController(IAuthService authService) : ControllerBase
     {
         var serviceResponse = new ServiceResponse<string>();
 
+
         try
         {
+            var validationResults = validator.Validate(user);
+
+            if (!validationResults.IsValid)
+            {
+                var errors = validationResults.Errors.Select(failure => new ValidationResults
+                {
+                    Property = failure.PropertyName,
+                    Error = failure.ErrorMessage,
+                }).ToList();
+
+                return BadRequest(new 
+                {
+                    Success = false,
+                    StatusCode = 400,
+                    Data = errors,
+
+                });
+            }
             var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
 
             await authService.Register(userModel);
@@ -179,4 +205,5 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         return StatusCode(serviceResponse.StatusCode, serviceResponse);
     }
+
 }
