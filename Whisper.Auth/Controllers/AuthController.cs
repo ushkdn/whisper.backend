@@ -1,24 +1,26 @@
 ﻿using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using System.Runtime.Remoting;
+using Whisper.Core.Helpers;
 using Whisper.Data.Dtos.Tokens;
 using Whisper.Data.Dtos.User;
 using Whisper.Data.Extensions;
 using Whisper.Data.Mapping;
 using Whisper.Data.Models;
 using Whisper.Data.Utils;
+using Whisper.Data.Validations;
 using Whisper.Services.AuthService;
 
 namespace Whisper.User.Controllers;
 
 [Route("api/auth")]
 [ApiController]
-public class ValidationResults
-{
-    public string Error { get; set; }
-    public string Property { get; set; }
-}
-public class AuthController(IValidator<UserRegisterDto> validator, IAuthService authService) : ControllerBase
+public class AuthController(
+    IValidator<UserRegisterDto> userRegisterDtoValidator,
+    IValidator<UserResetPasswordDto> userResetPasswordDtoValidator,
+    IValidator<UserLogInDto> userLogInDtoValidator,
+    IAuthService authService
+    ) : ControllerBase
 {
     #region RegisterSwaggerDoc
 
@@ -57,11 +59,15 @@ public class AuthController(IValidator<UserRegisterDto> validator, IAuthService 
     {
         var serviceResponse = new ServiceResponse<string>();
 
+        var validationResult = ValidationHelper.IsValid(userRegisterDtoValidator, user);
+        if (!validationResult.Success)
+        {
+            return StatusCode(validationResult.StatusCode, validationResult);
+        }
 
         try
         {
-            IsValidOrReturnBadRequest(validator, user);
-
+            
             var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
 
             await authService.Register(userModel);
@@ -130,8 +136,15 @@ public class AuthController(IValidator<UserRegisterDto> validator, IAuthService 
     {
         var serviceResponse = new ServiceResponse<string>();
 
+        var validationResult = ValidationHelper.IsValid(userResetPasswordDtoValidator, user);
+        if (!validationResult.Success)
+        {
+            return StatusCode(validationResult.StatusCode, validationResult);
+        }
+
         try
         {
+
             await authService.ResetPassword(userId, user.Password, user.SecretCode);
 
             serviceResponse.Success = true;
@@ -151,6 +164,12 @@ public class AuthController(IValidator<UserRegisterDto> validator, IAuthService 
     public async Task<IActionResult> LogIn([FromBody] UserLogInDto user)
     {
         var serviceResponse = new ServiceResponse<GetAuthTokensDto>();
+
+        var validationResult = ValidationHelper.IsValid(userLogInDtoValidator, user);
+        if (!validationResult.Success)
+        {
+            return StatusCode(validationResult.StatusCode, validationResult);
+        }
 
         try
         {
@@ -189,29 +208,5 @@ public class AuthController(IValidator<UserRegisterDto> validator, IAuthService 
         }
 
         return StatusCode(serviceResponse.StatusCode, serviceResponse);
-    }
-
-
-    private IActionResult IsValidOrReturnBadRequest<T>(IValidator<T> validator, T entry)
-    {
-        var validationResults = validator.Validate(entry);
-
-        if (!validationResults.IsValid)
-        {
-            var errors = validationResults.Errors.Select(failure => new ValidationResults
-            {
-                Property = failure.PropertyName,
-                Error = failure.ErrorMessage,
-            }).ToList();
-
-            return BadRequest(new
-            {
-                Success = false,
-                StatusCode = 400,
-                Data = errors,
-
-            });
-        }
-        return Ok();
     }
 }
