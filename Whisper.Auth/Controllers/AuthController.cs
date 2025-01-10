@@ -7,6 +7,7 @@ using Whisper.Data.Extensions;
 using Whisper.Data.Mapping;
 using Whisper.Data.Models;
 using Whisper.Data.Utils;
+using Whisper.Data.Validations;
 using Whisper.Services.AuthService;
 
 namespace Whisper.User.Controllers;
@@ -57,10 +58,17 @@ public class AuthController(
     {
         var serviceResponse = new ServiceResponse<string>();
 
-        var validationResult = ValidationHelper.Validate(userRegisterDtoValidator, user);
-        if (!validationResult.Success)
+        var validationErrors = ValidationHelper.Validate(userRegisterDtoValidator, user);
+        if (validationErrors is not null)
         {
-            return StatusCode(validationResult.StatusCode, validationResult);
+            var validationErrorsResponse = new ServiceResponse<List<ValidationError>>
+            {
+                StatusCode = 400,
+                Success = false,
+                Message = "Validation error",
+                Data = validationErrors
+            };
+            return StatusCode(validationErrorsResponse.StatusCode, validationErrorsResponse.Data);
         }
 
         try
@@ -133,10 +141,17 @@ public class AuthController(
     {
         var serviceResponse = new ServiceResponse<string>();
 
-        var validationResult = ValidationHelper.Validate(userResetPasswordDtoValidator, user);
-        if (!validationResult.Success)
+        var validationErrors = ValidationHelper.Validate(userResetPasswordDtoValidator, user);
+        if (validationErrors is not null)
         {
-            return StatusCode(validationResult.StatusCode, validationResult);
+            var validationErrorsResponse = new ServiceResponse<List<ValidationError>>
+            {
+                StatusCode = 400,
+                Success = false,
+                Message = "Validation error",
+                Data = validationErrors
+            };
+            return StatusCode(validationErrorsResponse.StatusCode, validationErrorsResponse.Data);
         }
 
         try
@@ -161,10 +176,17 @@ public class AuthController(
     {
         var serviceResponse = new ServiceResponse<GetAuthTokensDto>();
 
-        var validationResult = ValidationHelper.Validate(userLogInDtoValidator, user);
-        if (!validationResult.Success)
+        var validationErrors = ValidationHelper.Validate(userLogInDtoValidator, user);
+        if (validationErrors is not null)
         {
-            return StatusCode(validationResult.StatusCode, validationResult);
+            var validationErrorsResponse = new ServiceResponse<List<ValidationError>>
+            {
+                StatusCode = 400,
+                Success = false,
+                Message = "Validation error",
+                Data = validationErrors
+            };
+            return StatusCode(validationErrorsResponse.StatusCode, validationErrorsResponse.Data);
         }
 
         try

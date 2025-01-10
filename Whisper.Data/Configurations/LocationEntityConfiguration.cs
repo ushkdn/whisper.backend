@@ -1,12 +1,23 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Whisper.Data.Configurations.Base;
 using Whisper.Data.Entities;
 
 namespace Whisper.Data.Configurations;
 
-internal sealed class LocationEntityConfiguration : IEntityTypeConfiguration<LocationEntity>
+internal sealed class LocationEntityConfiguration : EntityConfiguration<LocationEntity>, IEntityTypeConfiguration<LocationEntity>
 {
-    public void Configure(EntityTypeBuilder<LocationEntity> builder)
+    public override void Configure(EntityTypeBuilder<LocationEntity> builder)
     {
+        base.Configure(builder);
+
+        builder.Property(p => p.Country).IsRequired().HasMaxLength(25).HasColumnName("country");
+
+        builder.HasIndex(i => i.Country).IsUnique();
+
+        builder.HasMany(p => p.User).WithOne(p => p.Location).HasForeignKey("location_id");
+
+        builder.ToTable(Tables.LOCATIONS);
+
     }
 }

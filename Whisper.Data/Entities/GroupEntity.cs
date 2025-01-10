@@ -5,7 +5,7 @@ using Whisper.Data.Entities.Base;
 
 namespace Whisper.Data.Entities;
 
-[Table(Tables.GROUP)]
+//[Table(Tables.GROUP)]
 [PrimaryKey(nameof(Id))]
 public class GroupEntity : EntityBase
 {
