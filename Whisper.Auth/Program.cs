@@ -1,5 +1,6 @@
 using Microsoft.OpenApi.Models;
 using System.Reflection;
+using Whisper.Core;
 using Whisper.Core.Registries;
 using Whisper.Data;
 using Whisper.Data.Extensions;
@@ -75,6 +76,8 @@ public class Program
         app.UseAuthorization();
 
         app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
+        app.UseMiddleware<ExceptionHandlingMiddleware>();
 
         app.MapControllers();
 

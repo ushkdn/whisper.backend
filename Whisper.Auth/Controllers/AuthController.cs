@@ -60,24 +60,8 @@ public class AuthController(IValidator<UserRegisterDto> validator, IAuthService 
 
         try
         {
-            var validationResults = validator.Validate(user);
+            IsValidOrReturnBadRequest(validator, user);
 
-            if (!validationResults.IsValid)
-            {
-                var errors = validationResults.Errors.Select(failure => new ValidationResults
-                {
-                    Property = failure.PropertyName,
-                    Error = failure.ErrorMessage,
-                }).ToList();
-
-                return BadRequest(new 
-                {
-                    Success = false,
-                    StatusCode = 400,
-                    Data = errors,
-
-                });
-            }
             var userModel = WhisperMapper.Mapper.Map<UserModel>(user);
 
             await authService.Register(userModel);
@@ -89,6 +73,7 @@ public class AuthController(IValidator<UserRegisterDto> validator, IAuthService 
         }
         catch (Exception ex)
         {
+            throw new Exception(ex.Message);
             serviceResponse = ex.ToServiceResponse<string>();
         }
 
@@ -206,4 +191,27 @@ public class AuthController(IValidator<UserRegisterDto> validator, IAuthService 
         return StatusCode(serviceResponse.StatusCode, serviceResponse);
     }
 
+
+    private IActionResult IsValidOrReturnBadRequest<T>(IValidator<T> validator, T entry)
+    {
+        var validationResults = validator.Validate(entry);
+
+        if (!validationResults.IsValid)
+        {
+            var errors = validationResults.Errors.Select(failure => new ValidationResults
+            {
+                Property = failure.PropertyName,
+                Error = failure.ErrorMessage,
+            }).ToList();
+
+            return BadRequest(new
+            {
+                Success = false,
+                StatusCode = 400,
+                Data = errors,
+
+            });
+        }
+        return Ok();
+    }
 }

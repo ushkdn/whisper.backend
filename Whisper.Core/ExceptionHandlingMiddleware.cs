@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using System.Text.Json;
 using Whisper.Data.Extensions;
-using Whisper.Data.Utils;
 
 namespace Whisper.Core;
 
