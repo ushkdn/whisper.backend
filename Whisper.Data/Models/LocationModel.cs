@@ -6,5 +6,5 @@ public class LocationModel
 {
     public string? Country { get; set; }
 
-    public virtual List<UserEntity>? User { get; set; }
+    public virtual List<UserModel>? User { get; set; } = [];
 }

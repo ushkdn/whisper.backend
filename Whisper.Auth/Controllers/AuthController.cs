@@ -68,7 +68,7 @@ public class AuthController(
                 Message = "Validation error",
                 Data = validationErrors
             };
-            return StatusCode(validationErrorsResponse.StatusCode, validationErrorsResponse.Data);
+            return StatusCode(validationErrorsResponse.StatusCode, validationErrorsResponse);
         }
 
         try
@@ -151,7 +151,7 @@ public class AuthController(
                 Message = "Validation error",
                 Data = validationErrors
             };
-            return StatusCode(validationErrorsResponse.StatusCode, validationErrorsResponse.Data);
+            return StatusCode(validationErrorsResponse.StatusCode, validationErrorsResponse);
         }
 
         try
@@ -186,7 +186,7 @@ public class AuthController(
                 Message = "Validation error",
                 Data = validationErrors
             };
-            return StatusCode(validationErrorsResponse.StatusCode, validationErrorsResponse.Data);
+            return StatusCode(validationErrorsResponse.StatusCode, validationErrorsResponse);
         }
 
         try

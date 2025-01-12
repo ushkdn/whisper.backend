@@ -161,6 +161,12 @@ namespace Whisper.Data.Migrations
                         .HasColumnType("character varying(15)")
                         .HasColumnName("username");
 
+                    b.Property<Guid?>("location_id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("refresh_token_id")
+                        .HasColumnType("uuid");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -172,6 +178,11 @@ namespace Whisper.Data.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
+                    b.HasIndex("location_id");
+
+                    b.HasIndex("refresh_token_id")
+                        .IsUnique();
+
                     b.ToTable("users", (string)null);
                 });
 
@@ -179,15 +190,13 @@ namespace Whisper.Data.Migrations
                 {
                     b.HasOne("Whisper.Data.Entities.LocationEntity", "Location")
                         .WithMany("User")
-                        .HasForeignKey("Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired()
-                        .HasConstraintName("location_id");
+                        .HasForeignKey("location_id")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("Whisper.Data.Entities.RefreshTokenEntity", "RefreshToken")
                         .WithOne("User")
-                        .HasForeignKey("Whisper.Data.Entities.UserEntity", "Id")
-                        .HasConstraintName("refresh_token_id");
+                        .HasForeignKey("Whisper.Data.Entities.UserEntity", "refresh_token_id")
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.Navigation("Location");
 
