@@ -15,7 +15,7 @@ internal sealed class LocationEntityConfiguration : EntityConfiguration<Location
 
         builder.HasIndex(i => i.Country).IsUnique();
 
-        builder.HasMany(p => p.User).WithOne(p => p.Location).HasForeignKey("location_id");
+        builder.HasMany(p => p.User).WithOne(p => p.Location).HasForeignKey(p => p.Id);
 
         builder.ToTable(Tables.LOCATIONS);
 

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Whisper.Data.Migrations
 {
     /// <inheritdoc />
-    public partial class Initial : Migration
+    public partial class Migration_Name : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -67,8 +67,6 @@ namespace Whisper.Data.Migrations
                     password = table.Column<string>(type: "character varying(120)", maxLength: 120, nullable: false),
                     birthday = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     is_verified = table.Column<bool>(type: "boolean", nullable: false),
-                    location_id = table.Column<Guid>(type: "uuid", nullable: false),
-                    refresh_token_id = table.Column<Guid>(type: "uuid", nullable: true),
                     date_created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     date_updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
@@ -76,14 +74,14 @@ namespace Whisper.Data.Migrations
                 {
                     table.PrimaryKey("PK_users", x => x.id);
                     table.ForeignKey(
-                        name: "FK_users_locations_location_id",
-                        column: x => x.location_id,
+                        name: "location_id",
+                        column: x => x.id,
                         principalTable: "locations",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_users_refresh_tokens_refresh_token_id",
-                        column: x => x.refresh_token_id,
+                        name: "refresh_token_id",
+                        column: x => x.id,
                         principalTable: "refresh_tokens",
                         principalColumn: "id");
                 });
@@ -101,20 +99,9 @@ namespace Whisper.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_users_location_id",
-                table: "users",
-                column: "location_id");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_users_phone_number",
                 table: "users",
                 column: "phone_number",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_users_refresh_token_id",
-                table: "users",
-                column: "refresh_token_id",
                 unique: true);
 
             migrationBuilder.CreateIndex(

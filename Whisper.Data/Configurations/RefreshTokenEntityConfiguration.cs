@@ -14,7 +14,7 @@ internal sealed class RefreshTokenEntityConfiguration : EntityBaseConfiguration<
         builder.Property(p => p.ExpireDate).IsRequired().HasColumnName("expire_date");
         builder.Property(p => p.Token).IsRequired().HasColumnName("token");
 
-        builder.HasOne(p => p.User).WithOne(p => p.RefreshToken).HasForeignKey<UserEntity>("refresh_token_id");
+        builder.HasOne(p => p.User).WithOne(p => p.RefreshToken).HasForeignKey<UserEntity>(p => p.Id).HasConstraintName("refresh_token_id");
 
         builder.ToTable(Tables.REFRESH_TOKENS);
 

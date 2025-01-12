@@ -24,8 +24,8 @@ internal sealed class UserEntityConfiguration : EntityBaseConfiguration<UserEnti
         builder.HasIndex(i => i.PhoneNumber).IsUnique();
         builder.HasIndex(i => i.Username).IsUnique();
 
-        builder.HasOne(p => p.Location).WithMany().HasForeignKey(p => p.Id);
-        builder.HasOne(p => p.RefreshToken).WithOne(p => p.User).HasForeignKey<RefreshTokenEntity>();
+        builder.HasOne(p => p.Location).WithMany(p => p.User).HasForeignKey(p => p.Id).HasConstraintName("location_id");
+        builder.HasOne(p => p.RefreshToken).WithOne(p => p.User).HasForeignKey<RefreshTokenEntity>(p => p.Id).HasConstraintName("refresh_token_id");
 
         builder.ToTable(Tables.USERS);
 

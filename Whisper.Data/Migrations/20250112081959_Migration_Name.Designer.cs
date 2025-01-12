@@ -12,8 +12,8 @@ using Whisper.Data;
 namespace Whisper.Data.Migrations
 {
     [DbContext(typeof(WhisperDbContext))]
-    [Migration("20250110183627_Initial")]
-    partial class Initial
+    [Migration("20250112081959_Migration_Name")]
+    partial class Migration_Name
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -164,12 +164,6 @@ namespace Whisper.Data.Migrations
                         .HasColumnType("character varying(15)")
                         .HasColumnName("username");
 
-                    b.Property<Guid>("location_id")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid?>("refresh_token_id")
-                        .HasColumnType("uuid");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
@@ -181,11 +175,6 @@ namespace Whisper.Data.Migrations
                     b.HasIndex("Username")
                         .IsUnique();
 
-                    b.HasIndex("location_id");
-
-                    b.HasIndex("refresh_token_id")
-                        .IsUnique();
-
                     b.ToTable("users", (string)null);
                 });
 
@@ -193,13 +182,15 @@ namespace Whisper.Data.Migrations
                 {
                     b.HasOne("Whisper.Data.Entities.LocationEntity", "Location")
                         .WithMany("User")
-                        .HasForeignKey("location_id")
+                        .HasForeignKey("Id")
                         .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .IsRequired()
+                        .HasConstraintName("location_id");
 
                     b.HasOne("Whisper.Data.Entities.RefreshTokenEntity", "RefreshToken")
                         .WithOne("User")
-                        .HasForeignKey("Whisper.Data.Entities.UserEntity", "refresh_token_id");
+                        .HasForeignKey("Whisper.Data.Entities.UserEntity", "Id")
+                        .HasConstraintName("refresh_token_id");
 
                     b.Navigation("Location");
 
