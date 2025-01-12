@@ -14,8 +14,6 @@ internal sealed class RefreshTokenEntityConfiguration : EntityBaseConfiguration<
         builder.Property(p => p.ExpireDate).IsRequired().HasColumnName("expire_date");
         builder.Property(p => p.Token).IsRequired().HasColumnName("token");
 
-
         builder.ToTable(Tables.REFRESH_TOKENS);
-
     }
 }

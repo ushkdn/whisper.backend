@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Whisper.Data.Utils;
 using Whisper.Data.Validations;
 
 namespace Whisper.Core.Helpers;

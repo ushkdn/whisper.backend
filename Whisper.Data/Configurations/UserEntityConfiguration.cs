@@ -20,26 +20,22 @@ internal sealed class UserEntityConfiguration : EntityBaseConfiguration<UserEnti
         builder.Property(p => p.BirthDay).IsRequired().HasColumnName("birthday");
         builder.Property(p => p.IsVerified).HasColumnName("is_verified");
 
-
         builder.HasIndex(i => i.Email).IsUnique();
         builder.HasIndex(i => i.PhoneNumber).IsUnique();
         builder.HasIndex(i => i.Username).IsUnique();
 
         builder.HasOne(u => u.Location)
                .WithMany(l => l.User)
-               .HasForeignKey("location_id") // Указываем имя внешнего ключа
+               .HasForeignKey("location_id")
                .IsRequired(false)
-               .HasPrincipalKey(l => l.Id) // Указываем, что Id в LocationEntity является основным ключом
-               .OnDelete(DeleteBehavior.Cascade); // Опционально: поведение при удалении
-
+               .HasPrincipalKey(l => l.Id)
+               .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(u => u.RefreshToken)
                .WithOne(r => r.User)
-               .HasForeignKey<UserEntity>("refresh_token_id") // Указываем Id как внешний ключ
-               .OnDelete(DeleteBehavior.Cascade); // Удаляем RefreshToken при удалении User
-
+               .HasForeignKey<UserEntity>("refresh_token_id")
+               .OnDelete(DeleteBehavior.Cascade);
 
         builder.ToTable(Tables.USERS);
-
     }
 }

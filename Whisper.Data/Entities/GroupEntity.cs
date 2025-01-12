@@ -23,4 +23,8 @@ public class GroupEntity : EntityBase
     [Column("is_closed")]
     [Required(ErrorMessage = "Group status(open/closed) is required")]
     public bool IsClosed { get; set; }
+
+    public virtual List<UserEntity>? Followers { get; set; } = [];
+    public virtual List<UserEntity>? Moderators { get; set; } = [];
+    public virtual UserEntity? Admin { get; set; }
 }

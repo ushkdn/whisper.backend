@@ -15,8 +15,6 @@ internal sealed class LocationEntityConfiguration : EntityConfiguration<Location
 
         builder.HasIndex(i => i.Country).IsUnique();
 
-
         builder.ToTable(Tables.LOCATIONS);
-
     }
 }

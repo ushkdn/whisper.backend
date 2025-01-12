@@ -1,6 +1,4 @@
-﻿using Whisper.Data.Entities;
-
-namespace Whisper.Data.Models;
+﻿namespace Whisper.Data.Models;
 
 public class LocationModel
 {
