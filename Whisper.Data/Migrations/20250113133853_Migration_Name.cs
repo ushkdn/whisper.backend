@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -11,22 +10,6 @@ namespace Whisper.Data.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "groups",
-                columns: table => new
-                {
-                    id = table.Column<Guid>(type: "uuid", nullable: false),
-                    title = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    description = table.Column<string>(type: "text", nullable: true),
-                    is_closed = table.Column<bool>(type: "boolean", nullable: false),
-                    date_created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
-                    date_updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_groups", x => x.id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "locations",
                 columns: table => new
@@ -90,6 +73,29 @@ namespace Whisper.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "groups",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    title = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
+                    is_closed = table.Column<bool>(type: "boolean", nullable: false),
+                    owner_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    date_created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    date_updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_groups", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_groups_users_owner_id",
+                        column: x => x.owner_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "user_followed_groups",
                 columns: table => new
                 {
@@ -138,6 +144,11 @@ namespace Whisper.Data.Migrations
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_groups_owner_id",
+                table: "groups",
+                column: "owner_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_locations_country",

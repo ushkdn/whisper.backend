@@ -13,5 +13,5 @@ public class GroupEntity : EntityBase
 
     public virtual List<UserFollowerGroupsEntity>? Followers { get; set; } = [];
     public virtual List<UserModeratorGroupsEntity>? Moderators { get; set; } = [];
-    //public virtual UserEntity? Admin { get; set; }
+    public virtual UserEntity? Owner { get; set; }
 }

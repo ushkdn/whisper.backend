@@ -27,6 +27,14 @@ internal sealed class GroupEntityConfiguration : EntityBaseConfiguration<GroupEn
             .HasColumnName("description");
 
         builder
+            .HasOne(p => p.Owner)
+            .WithMany(p => p.OwnedGroups)
+            .HasForeignKey("owner_id")
+            .IsRequired()
+            .HasPrincipalKey(p => p.Id)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder
             .ToTable(Tables.GROUPS);
     }
 }

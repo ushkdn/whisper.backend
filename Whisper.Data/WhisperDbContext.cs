@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Whisper.Data.Configurations;
+using Whisper.Data.Configurations.UserGroup;
 using Whisper.Data.Entities;
 using Whisper.Data.Entities.UserGroup;
 
@@ -19,8 +20,8 @@ public class WhisperDbContext(DbContextOptions options) : DbContext(options)
         modelBuilder.ApplyConfiguration(new UserEntityConfiguration());
         modelBuilder.ApplyConfiguration(new LocationEntityConfiguration());
         modelBuilder.ApplyConfiguration(new RefreshTokenEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new UserFollowerGroupsConfiguration());
         modelBuilder.ApplyConfiguration(new GroupEntityConfiguration());
-        modelBuilder.ApplyConfiguration(new UserModeratorGroupsConfiguration());
+        modelBuilder.ApplyConfiguration(new UserFollowerGroupsConfiguration());
+        modelBuilder.ApplyConfiguration(new UserModeratorGroupsEntityConfiguration());
     }
 }

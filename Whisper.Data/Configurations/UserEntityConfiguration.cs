@@ -63,16 +63,16 @@ internal sealed class UserEntityConfiguration : EntityBaseConfiguration<UserEnti
             .IsUnique();
 
         builder
-            .HasOne(u => u.Location)
-            .WithMany(l => l.User)
+            .HasOne(p => p.Location)
+            .WithMany(p => p.User)
             .HasForeignKey("location_id")
             .IsRequired(false)
-            .HasPrincipalKey(l => l.Id)
+            .HasPrincipalKey(p => p.Id)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
-            .HasOne(u => u.RefreshToken)
-            .WithOne(r => r.User)
+            .HasOne(p => p.RefreshToken)
+            .WithOne(p => p.User)
             .HasForeignKey<UserEntity>("refresh_token_id")
             .OnDelete(DeleteBehavior.Cascade);
 

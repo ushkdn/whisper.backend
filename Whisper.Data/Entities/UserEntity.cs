@@ -26,5 +26,5 @@ public class UserEntity : EntityBase
     public virtual RefreshTokenEntity? RefreshToken { get; set; }
     public virtual List<UserFollowerGroupsEntity>? FollowedGroups { get; set; } = [];
     public virtual List<UserModeratorGroupsEntity>? ModeratedGroups { get; set; } = [];
-    //public virtual List<GroupEntity>? OwnedGroups { get; set; } = [];
+    public virtual List<GroupEntity>? OwnedGroups { get; set; } = [];
 }

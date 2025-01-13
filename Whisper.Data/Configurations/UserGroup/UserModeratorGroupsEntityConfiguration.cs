@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Whisper.Data.Configurations.Base;
 using Whisper.Data.Entities.UserGroup;
 
-namespace Whisper.Data.Configurations;
+namespace Whisper.Data.Configurations.UserGroup;
 
-internal sealed class UserModeratorGroupsConfiguration : EntityConfiguration<UserModeratorGroupsEntity>
+internal sealed class UserModeratorGroupsEntityConfiguration : EntityConfiguration<UserModeratorGroupsEntity>
 {
     public override void Configure(EntityTypeBuilder<UserModeratorGroupsEntity> builder)
     {
