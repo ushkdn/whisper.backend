@@ -12,7 +12,7 @@ using Whisper.Data;
 namespace Whisper.Data.Migrations
 {
     [DbContext(typeof(WhisperDbContext))]
-    [Migration("20250113114348_Migration_Name")]
+    [Migration("20250113131227_Migration_Name")]
     partial class Migration_Name
     {
         /// <inheritdoc />
@@ -188,7 +188,7 @@ namespace Whisper.Data.Migrations
                     b.ToTable("users", (string)null);
                 });
 
-            modelBuilder.Entity("Whisper.Data.Entities.UserGroupEntity", b =>
+            modelBuilder.Entity("Whisper.Data.Entities.UserFollowerGroups", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -212,6 +212,30 @@ namespace Whisper.Data.Migrations
                     b.ToTable("user_followed_groups", (string)null);
                 });
 
+            modelBuilder.Entity("Whisper.Data.Entities.UserModeratorGroups", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("id");
+
+                    b.Property<Guid>("GroupId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("group_id");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("user_id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("user_moderator_groups", (string)null);
+                });
+
             modelBuilder.Entity("Whisper.Data.Entities.UserEntity", b =>
                 {
                     b.HasOne("Whisper.Data.Entities.LocationEntity", "Location")
@@ -229,7 +253,7 @@ namespace Whisper.Data.Migrations
                     b.Navigation("RefreshToken");
                 });
 
-            modelBuilder.Entity("Whisper.Data.Entities.UserGroupEntity", b =>
+            modelBuilder.Entity("Whisper.Data.Entities.UserFollowerGroups", b =>
                 {
                     b.HasOne("Whisper.Data.Entities.GroupEntity", "Group")
                         .WithMany("Followers")
@@ -248,9 +272,30 @@ namespace Whisper.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("Whisper.Data.Entities.UserModeratorGroups", b =>
+                {
+                    b.HasOne("Whisper.Data.Entities.GroupEntity", "Group")
+                        .WithMany("Moderators")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Whisper.Data.Entities.UserEntity", "User")
+                        .WithMany("ModeratedGroups")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("Whisper.Data.Entities.GroupEntity", b =>
                 {
                     b.Navigation("Followers");
+
+                    b.Navigation("Moderators");
                 });
 
             modelBuilder.Entity("Whisper.Data.Entities.LocationEntity", b =>
@@ -266,6 +311,8 @@ namespace Whisper.Data.Migrations
             modelBuilder.Entity("Whisper.Data.Entities.UserEntity", b =>
                 {
                     b.Navigation("FollowedGroups");
+
+                    b.Navigation("ModeratedGroups");
                 });
 #pragma warning restore 612, 618
         }

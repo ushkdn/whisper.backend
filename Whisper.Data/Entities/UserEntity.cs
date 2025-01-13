@@ -1,4 +1,5 @@
 ﻿using Whisper.Data.Entities.Base;
+using Whisper.Data.Entities.UserGroup;
 
 namespace Whisper.Data.Entities;
 
@@ -23,7 +24,7 @@ public class UserEntity : EntityBase
     public virtual LocationEntity? Location { get; set; }
 
     public virtual RefreshTokenEntity? RefreshToken { get; set; }
-    public virtual List<UserGroupEntity>? FollowedGroups { get; set; } = [];
-    //public virtual List<GroupEntity>? ModeratedGroups { get; set; } = [];
+    public virtual List<UserFollowerGroupsEntity>? FollowedGroups { get; set; } = [];
+    public virtual List<UserModeratorGroupsEntity>? ModeratedGroups { get; set; } = [];
     //public virtual List<GroupEntity>? OwnedGroups { get; set; } = [];
 }

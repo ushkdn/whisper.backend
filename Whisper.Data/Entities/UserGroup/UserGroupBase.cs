@@ -1,8 +1,8 @@
 ﻿using Whisper.Data.Entities.Base;
 
-namespace Whisper.Data.Entities;
+namespace Whisper.Data.Entities.UserGroup;
 
-public class UserGroupEntity : Entity
+public abstract class UserGroupBase : Entity
 {
     public Guid UserId { get; set; }
     public Guid GroupId { get; set; }

@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -113,6 +114,31 @@ namespace Whisper.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "user_moderator_groups",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    group_id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_user_moderator_groups", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_user_moderator_groups_groups_group_id",
+                        column: x => x.group_id,
+                        principalTable: "groups",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_user_moderator_groups_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_locations_country",
                 table: "locations",
@@ -127,6 +153,16 @@ namespace Whisper.Data.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_user_followed_groups_user_id",
                 table: "user_followed_groups",
+                column: "user_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_moderator_groups_group_id",
+                table: "user_moderator_groups",
+                column: "group_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_moderator_groups_user_id",
+                table: "user_moderator_groups",
                 column: "user_id");
 
             migrationBuilder.CreateIndex(
@@ -164,6 +200,9 @@ namespace Whisper.Data.Migrations
         {
             migrationBuilder.DropTable(
                 name: "user_followed_groups");
+
+            migrationBuilder.DropTable(
+                name: "user_moderator_groups");
 
             migrationBuilder.DropTable(
                 name: "groups");

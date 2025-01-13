@@ -1,4 +1,5 @@
 ﻿using Whisper.Data.Entities.Base;
+using Whisper.Data.Entities.UserGroup;
 
 namespace Whisper.Data.Entities;
 
@@ -10,7 +11,7 @@ public class GroupEntity : EntityBase
 
     public bool IsClosed { get; set; }
 
-    public virtual List<UserGroupEntity>? Followers { get; set; } = [];
-    //public virtual List<UserEntity>? Moderators { get; set; } = [];
+    public virtual List<UserFollowerGroupsEntity>? Followers { get; set; } = [];
+    public virtual List<UserModeratorGroupsEntity>? Moderators { get; set; } = [];
     //public virtual UserEntity? Admin { get; set; }
 }

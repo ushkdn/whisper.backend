@@ -1,13 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Whisper.Data.Configurations.Base;
-using Whisper.Data.Entities;
+using Whisper.Data.Entities.UserGroup;
 
 namespace Whisper.Data.Configurations;
 
-internal sealed class UserFollowedGroupConfiguration : EntityConfiguration<UserGroupEntity>
+internal sealed class UserFollowerGroupsConfiguration : EntityConfiguration<UserFollowerGroupsEntity>
 {
-    public override void Configure(EntityTypeBuilder<UserGroupEntity> builder)
+    public override void Configure(EntityTypeBuilder<UserFollowerGroupsEntity> builder)
     {
         base.Configure(builder);
 
