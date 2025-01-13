@@ -1,10 +1,11 @@
 ﻿using Whisper.Data.Models;
+using Whisper.Data.Utils;
 
 namespace Whisper.Services.TokenService;
 
 public interface ITokenService
 {
-    Task<AuthTokensModel> RefreshTokens();
+    Task<AuthTokens> RefreshTokens();
 
-    AuthTokensModel CreateTokensAndSetRefreshToken(UserModel user);
+    AuthTokens CreateTokensAndSetRefreshToken(UserModel user);
 }

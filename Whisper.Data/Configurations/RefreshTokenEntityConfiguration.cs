@@ -5,15 +5,23 @@ using Whisper.Data.Entities;
 
 namespace Whisper.Data.Configurations;
 
-internal sealed class RefreshTokenEntityConfiguration : EntityBaseConfiguration<RefreshTokenEntity>, IEntityTypeConfiguration<RefreshTokenEntity>
+internal sealed class RefreshTokenEntityConfiguration : EntityBaseConfiguration<RefreshTokenEntity>
 {
     public override void Configure(EntityTypeBuilder<RefreshTokenEntity> builder)
     {
         base.Configure(builder);
 
-        builder.Property(p => p.ExpireDate).IsRequired().HasColumnName("expire_date");
-        builder.Property(p => p.Token).IsRequired().HasColumnName("token");
+        builder
+            .Property(p => p.ExpireDate)
+            .IsRequired()
+            .HasColumnName("expire_date");
 
-        builder.ToTable(Tables.REFRESH_TOKENS);
+        builder
+            .Property(p => p.Token)
+            .IsRequired()
+            .HasColumnName("token");
+
+        builder
+            .ToTable(Tables.REFRESH_TOKENS);
     }
 }

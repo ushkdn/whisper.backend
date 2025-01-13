@@ -5,16 +5,23 @@ using Whisper.Data.Entities;
 
 namespace Whisper.Data.Configurations;
 
-internal sealed class LocationEntityConfiguration : EntityConfiguration<LocationEntity>, IEntityTypeConfiguration<LocationEntity>
+internal sealed class LocationEntityConfiguration : EntityConfiguration<LocationEntity>
 {
     public override void Configure(EntityTypeBuilder<LocationEntity> builder)
     {
         base.Configure(builder);
 
-        builder.Property(p => p.Country).IsRequired().HasMaxLength(25).HasColumnName("country");
+        builder
+            .Property(p => p.Country)
+            .IsRequired()
+            .HasMaxLength(25)
+            .HasColumnName("country");
 
-        builder.HasIndex(i => i.Country).IsUnique();
+        builder
+            .HasIndex(i => i.Country)
+            .IsUnique();
 
-        builder.ToTable(Tables.LOCATIONS);
+        builder
+            .ToTable(Tables.LOCATIONS);
     }
 }

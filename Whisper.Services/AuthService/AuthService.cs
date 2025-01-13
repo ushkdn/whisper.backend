@@ -46,7 +46,7 @@ public class AuthService(
         );
     }
 
-    public async Task<AuthTokensModel> LogIn(string email, string password)
+    public async Task<AuthTokens> LogIn(string email, string password)
     {
         var storedUser = WhisperMapper.Mapper.Map<UserModel>(await userRepository.GetRelatedByEmailAsync(email))
             ?? throw new ArgumentException("Wrong email or password.");
@@ -64,7 +64,7 @@ public class AuthService(
 
         await UpdateUserAndSaveChangesAsync(storedUser);
 
-        return new AuthTokensModel(authTokens.AccessToken, authTokens.RefreshToken);
+        return new AuthTokens(authTokens.AccessToken, authTokens.RefreshToken);
     }
 
     public async Task Register(UserModel user)
@@ -120,7 +120,7 @@ public class AuthService(
         await UpdateUserAndSaveChangesAsync(storedUser);
     }
 
-    public async Task<AuthTokensModel> Verify(Guid userId, string secretCode)
+    public async Task<AuthTokens> Verify(Guid userId, string secretCode)
     {
         var cachedSecretCode = await cacheRepository.GetSingleAsync<CacheSecretCode>
         (
@@ -152,7 +152,7 @@ public class AuthService(
 
         await UpdateUserAndSaveChangesAsync(storedUser);
 
-        return new AuthTokensModel(authTokens.AccessToken, authTokens.RefreshToken);
+        return new AuthTokens(authTokens.AccessToken, authTokens.RefreshToken);
     }
 
     private async Task UpdateUserAndSaveChangesAsync(UserModel user)

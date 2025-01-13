@@ -8,7 +8,13 @@ internal class EntityConfiguration<TEntity> : IEntityTypeConfiguration<TEntity> 
 {
     public virtual void Configure(EntityTypeBuilder<TEntity> builder)
     {
-        builder.HasKey(x => x.Id);
-        builder.Property(x => x.Id).IsRequired().HasColumnName("id").ValueGeneratedOnAdd();
+        builder
+            .HasKey(x => x.Id);
+
+        builder
+            .Property(x => x.Id)
+            .IsRequired()
+            .HasColumnName("id")
+            .ValueGeneratedOnAdd();
     }
 }

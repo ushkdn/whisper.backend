@@ -11,19 +11,19 @@ namespace Whisper.Data.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "Groups",
+                name: "groups",
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     title = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
-                    description = table.Column<string>(type: "text", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
                     is_closed = table.Column<bool>(type: "boolean", nullable: false),
                     date_created = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     date_updated = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Groups", x => x.id);
+                    table.PrimaryKey("PK_groups", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -88,11 +88,46 @@ namespace Whisper.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "user_followed_groups",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uuid", nullable: false),
+                    user_id = table.Column<Guid>(type: "uuid", nullable: false),
+                    group_id = table.Column<Guid>(type: "uuid", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_user_followed_groups", x => x.id);
+                    table.ForeignKey(
+                        name: "FK_user_followed_groups_groups_group_id",
+                        column: x => x.group_id,
+                        principalTable: "groups",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_user_followed_groups_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "users",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_locations_country",
                 table: "locations",
                 column: "country",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_followed_groups_group_id",
+                table: "user_followed_groups",
+                column: "group_id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_user_followed_groups_user_id",
+                table: "user_followed_groups",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_users_email",
@@ -128,7 +163,10 @@ namespace Whisper.Data.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Groups");
+                name: "user_followed_groups");
+
+            migrationBuilder.DropTable(
+                name: "groups");
 
             migrationBuilder.DropTable(
                 name: "users");

@@ -11,6 +11,7 @@ using Whisper.Data.Mapping;
 using Whisper.Data.Models;
 using Whisper.Data.Repositories.RefreshTokenRepository;
 using Whisper.Data.Transactions;
+using Whisper.Data.Utils;
 
 namespace Whisper.Services.TokenService;
 
@@ -23,7 +24,7 @@ public class TokenService(
 {
     private readonly string tokenHashKey = configuration.GetStringOrThrow("Token:HashKey");
 
-    public async Task<AuthTokensModel> RefreshTokens()
+    public async Task<AuthTokens> RefreshTokens()
     {
         var refreshTokenFromCookie = httpContext.HttpContext.Request.Cookies["refresh-token"]
             ?? throw new ArgumentException("Missing refresh-token. Please log-in again.");
@@ -43,16 +44,16 @@ public class TokenService(
         refreshTokenRepository.Update(WhisperMapper.Mapper.Map<RefreshTokenEntity>(authTokens.RefreshToken));
         await transactionManager.SaveChangesAsync();
 
-        return new AuthTokensModel(authTokens.AccessToken, authTokens.RefreshToken);
+        return new AuthTokens(authTokens.AccessToken, authTokens.RefreshToken);
     }
 
-    public AuthTokensModel CreateTokensAndSetRefreshToken(UserModel user)
+    public AuthTokens CreateTokensAndSetRefreshToken(UserModel user)
     {
         var refreshToken = CreateRefreshToken();
         var accessToken = CreateAccessToken(user);
         SetRefreshToken(refreshToken);
 
-        return new AuthTokensModel(accessToken, refreshToken);
+        return new AuthTokens(accessToken, refreshToken);
     }
 
     private RefreshTokenModel CreateRefreshToken()

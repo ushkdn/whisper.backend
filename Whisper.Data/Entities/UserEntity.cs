@@ -23,7 +23,7 @@ public class UserEntity : EntityBase
     public virtual LocationEntity? Location { get; set; }
 
     public virtual RefreshTokenEntity? RefreshToken { get; set; }
-    public virtual List<GroupEntity>? FollowedGroups { get; set; } = [];
-    public virtual List<GroupEntity>? ModeratedGroups { get; set; } = [];
-    public virtual List<GroupEntity>? OwnedGroups { get; set; } = [];
+    public virtual List<UserGroupEntity>? FollowedGroups { get; set; } = [];
+    //public virtual List<GroupEntity>? ModeratedGroups { get; set; } = [];
+    //public virtual List<GroupEntity>? OwnedGroups { get; set; } = [];
 }
