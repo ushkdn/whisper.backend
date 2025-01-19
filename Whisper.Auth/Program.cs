@@ -1,4 +1,5 @@
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.Filters;
 using System.Reflection;
 using Whisper.Core;
 using Whisper.Core.Registries;
@@ -16,6 +17,9 @@ public class Program
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
+
+        _ = new DotEnvRegistry(builder.Environment)
+            .AddDotEnvConfiguration(builder.Configuration);
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
@@ -37,12 +41,20 @@ public class Program
             var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
             var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
             c.IncludeXmlComments(xmlPath);
+
+            c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+            {
+                Description = "Standart authorization header using the Bearer Scheme (\"bearer [space] {token}\")",
+                In = ParameterLocation.Header,
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey
+            });
+            c.OperationFilter<SecurityRequirementsOperationFilter>();
         });
 
         builder.Services.AddOpenApi();
 
-        _ = new DotEnvRegistry(builder.Environment)
-            .AddDotEnvConfiguration(builder.Configuration);
+        builder.Services.AddJwtAuthentification(builder.Configuration);
 
         DataDependencyContainerConfiguration.RegisterServices(builder.Services);
         DataDependencyContainerConfiguration.RegisterDatabase(builder.Services, builder.Configuration, "Postgres");
@@ -73,6 +85,7 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
 
         app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());

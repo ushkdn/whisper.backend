@@ -3,3 +3,4 @@
 - Rework repository architecture(throwing exceptions or return null)
 - Sending endpoint urls for verification/reset password reqs
 - Modify tests(test input data)
+- refactor and rewrite exception logic(throwing, handling) coz at this time global exception handler handling keynotfound exception and etc and this should be in controller)
