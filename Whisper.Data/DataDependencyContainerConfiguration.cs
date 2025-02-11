@@ -17,7 +17,7 @@ namespace Whisper.Data;
 
 public static class DataDependencyContainerConfiguration
 {
-    public static void RegisterServices(IServiceCollection services)
+    public static IServiceCollection RegisterServices(this IServiceCollection services)
     {
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
         services.AddScoped<IUserRepository, UserRepository>();
@@ -25,9 +25,10 @@ public static class DataDependencyContainerConfiguration
         services.AddScoped<ILocationRepository, LocationRepository>();
         services.AddScoped<ITransactionManager, TransactionManager>();
         services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        return services;
     }
 
-    public static void RegisterDatabase(IServiceCollection services, IConfiguration configuration, string dbConnectionStringKey)
+    public static IServiceCollection RegisterDatabase(this IServiceCollection services, IConfiguration configuration, string dbConnectionStringKey)
     {
         var dbConnectionString = configuration.GetConnectionString(dbConnectionStringKey)
                                ?? throw new ArgumentNullException($"{dbConnectionStringKey} is not configured.");
@@ -37,15 +38,17 @@ public static class DataDependencyContainerConfiguration
                 .UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking)
                 .UseNpgsql(dbConnectionString,
                     x => x.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery)));
+        return services;
     }
 
-    public static void RegisterCacheStorage(IServiceCollection services, IConfiguration configuration, string cacheStorageConnectionStringKey)
+    public static IServiceCollection RegisterCacheStorage(this IServiceCollection services, IConfiguration configuration, string cacheStorageConnectionStringKey)
     {
         var cacheStorageconnectionString = configuration.GetConnectionString(cacheStorageConnectionStringKey)
             ?? throw new ArgumentNullException($"{cacheStorageConnectionStringKey} is not configured.");
 
         services.AddSingleton<IConnectionMultiplexer>(ConnectionMultiplexer.Connect(cacheStorageconnectionString));
         services.AddSingleton<ICacheRepository, CacheRepository>();
+        return services;
     }
 
     public static void SetNpgsqlContext()
@@ -53,11 +56,12 @@ public static class DataDependencyContainerConfiguration
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
 
-    public static void RegisterValidators(IServiceCollection services)
+    public static IServiceCollection RegisterValidators(this IServiceCollection services)
     {
         services.AddValidatorsFromAssemblyContaining<UserRegisterDtoValidation>();
         services.AddValidatorsFromAssemblyContaining<AddLocationDtoValidation>();
         services.AddValidatorsFromAssemblyContaining<UserResetPasswordDtoValidation>();
         services.AddValidatorsFromAssemblyContaining<UserLogInDtoValidation>();
+        return services;
     }
 }

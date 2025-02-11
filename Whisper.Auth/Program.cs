@@ -1,6 +1,3 @@
-using Microsoft.OpenApi.Models;
-using Swashbuckle.AspNetCore.Filters;
-using System.Reflection;
 using Whisper.Core;
 using Whisper.Core.Registries;
 using Whisper.Data;
@@ -23,44 +20,19 @@ public class Program
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
-        builder.Services.AddSwaggerGen(c =>
-        {
-            c.SwaggerDoc("v1", new OpenApiInfo
-            {
-                Title = "Whisper.Auth API",
-                Version = "v1",
-                Description = "An API to perform auth operations",
-                TermsOfService = new Uri("https://example.com/terms"),
-                Contact = new OpenApiContact
-                {
-                    Name = "Ushkan Daniil",
-                    Email = "ushkndn@gmal.com",
-                    Url = new Uri("https://github.com/ushkdn"),
-                }
-            });
-            var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-            var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
-            c.IncludeXmlComments(xmlPath);
-
-            c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-            {
-                Description = "Standart authorization header using the Bearer Scheme (\"bearer [space] {token}\")",
-                In = ParameterLocation.Header,
-                Name = "Authorization",
-                Type = SecuritySchemeType.ApiKey
-            });
-            c.OperationFilter<SecurityRequirementsOperationFilter>();
-        });
+        builder.Services.ConfigureSwagger();
 
         builder.Services.AddOpenApi();
 
         builder.Services.AddJwtAuthentification(builder.Configuration);
 
-        DataDependencyContainerConfiguration.RegisterServices(builder.Services);
-        DataDependencyContainerConfiguration.RegisterDatabase(builder.Services, builder.Configuration, "Postgres");
-        DataDependencyContainerConfiguration.RegisterCacheStorage(builder.Services, builder.Configuration, "Redis");
-        DataDependencyContainerConfiguration.RegisterValidators(builder.Services);
         DataDependencyContainerConfiguration.SetNpgsqlContext();
+
+        builder.Services
+            .RegisterServices()
+            .RegisterDatabase(builder.Configuration, "Postgres")
+            .RegisterCacheStorage(builder.Configuration, "Redis")
+            .RegisterValidators();
 
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IAuthService, AuthService>();
