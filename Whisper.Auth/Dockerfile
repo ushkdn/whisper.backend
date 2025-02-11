@@ -4,8 +4,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 5000
-EXPOSE 5001
+EXPOSE 8080
+EXPOSE 8081
 
 
 # This stage is used to build the service project
@@ -15,6 +15,7 @@ WORKDIR /src
 COPY ["Whisper.Auth/Whisper.Auth.csproj", "Whisper.Auth/"]
 COPY ["Whisper.Data/Whisper.Data.csproj", "Whisper.Data/"]
 COPY ["Whisper.Services/Whisper.Services.csproj", "Whisper.Services/"]
+COPY ["Whisper.Core/Whisper.Core.csproj", "Whisper.Core/"]
 RUN dotnet restore "./Whisper.Auth/Whisper.Auth.csproj"
 COPY . .
 WORKDIR "/src/Whisper.Auth"
